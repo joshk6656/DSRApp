@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        Help
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-list>
+      <ion-list-header>Find us on Facebook</ion-list-header>
+      <ion-item>
+        <a href="fb://www.facebook.com/groups/DSRProductSupport">
+          <ion-icon name="logo-facebook" item-start></ion-icon>
+          DSR Support op Facebook
+        </a>
+      </ion-item>
+    </ion-list>
+  
+    <ion-list-header>FAQ Search</ion-list-header>
+    <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+    <ion-list>
+      <ion-item *ngFor="let item of items; let i = index" (click)="helpDetails(items[i])">
+        {{ item.q }}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+  

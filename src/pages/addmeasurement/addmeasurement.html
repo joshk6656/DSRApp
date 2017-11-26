@@ -1,0 +1,188 @@
+<!--
+  Generated template for the AddmeasurementPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Eerste meting toevoegen</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <ion-list>
+        <ion-item>
+          <ion-label>Date</ion-label>
+          <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="newmeasurement.tom"></ion-datetime>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <h2>KH</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.kh"></ion-input>
+          <p item-right>°dH</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.kh"></ion-input>
+          <p item-right>°dH</p>
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <h2>Ca</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.ca"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.ca"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <h2>Nitraat</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.no3"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.no3"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <h2>Fosfaat</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.po4"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.po4"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+      </ion-list>
+      
+      <ion-list no-lines>
+        <ion-item>
+          <ion-label>PH, Zoutgehalte en Nitriet?</ion-label>
+          <ion-checkbox checked="false" [(ngModel)]="showphandsalinity"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngIf="showphandsalinity">
+        <h2>PH</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.ph"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.ph"></ion-input>
+        </ion-item>
+        <h2>Saliniteit</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.salinity"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.salinity"></ion-input>
+        </ion-item>
+        <h2>NO2 (Nitriet, niet Nitraat)</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.no2"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.no2"></ion-input>
+        </ion-item>
+      </ion-list>
+      
+      <ion-list no-lines>
+        <ion-item>
+          <ion-label>Show all tests?</ion-label>
+          <ion-checkbox checked="false" [(ngModel)]="showalltests"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngIf="showalltests">
+        <h2>Mg</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.mg"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.mg"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+        <h2>Kalium</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.kalium"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.kalium"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <h2>Strontium</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.strontium"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.strontium"></ion-input>
+          <p item-right>mg/l</p>
+        </ion-item>
+        <h2>Boor</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.boor"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.boor"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+        <h2>Jodide 1:10</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.jodide"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.jodide"></ion-input>
+          <p item-right>ppm</p>
+        </ion-item>
+        <h2>Ijzer</h2>
+        <ion-item>
+          <ion-label>Gemeten waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="newmeasurement.iron"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Doel waarde</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.iron"></ion-input>
+        </ion-item>
+
+      </ion-list>
+      <button (click)='save()' ion-button>Opslaan</button>
+      
+</ion-content>

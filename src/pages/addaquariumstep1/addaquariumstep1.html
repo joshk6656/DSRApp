@@ -1,0 +1,175 @@
+<!--
+  Generated template for the Addaquariumstep1Page page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Aquarium Toevoegen</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <h2>Overzicht</h2>
+  <ion-list>
+    <ion-item>
+      <ion-label>Aquarium Naam</ion-label>
+      <ion-input type="text" [(ngModel)]="aquarium.name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Aquarium Bezetting</ion-label>
+      <ion-select [(ngModel)]="aquarium.occupation">
+        <ion-option *ngFor="let type of occupationtypes" [value] = "type.name">{{type.descr}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <h2>Locatie</h2>
+  <ion-list>
+    <ion-item>
+      <ion-label>Land</ion-label>
+      <ion-select [(ngModel)]="aquarium.country">
+        <ion-option *ngFor="let country of countries" [value] = "country.code" selected="{{country.selected}}">{{country.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Gemeente</ion-label>
+      <ion-input type="text" [(ngModel)]="aquarium.location"></ion-input>
+    </ion-item>
+  </ion-list>
+  <h2>Locatie</h2>
+  <ion-list>
+    <ion-item>
+      <ion-label>Aquarium Lengte</ion-label>
+      <ion-input type="number" [(ngModel)]="aquarium.aquarium_lngth" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+      <p item-right>cm</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Aquarium Breedte</ion-label>
+      <ion-input type="number" [(ngModel)]="aquarium.aquarium_width" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+      <p item-right>cm</p>
+    </ion-item>
+
+    <ion-item>
+        <ion-label>Water Hoogte</ion-label>
+        <ion-input type="number" [(ngModel)]="aquarium.aquarium_waterheight" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+        <p item-right>cm</p>
+    </ion-item>
+  </ion-list>
+
+  <ion-list no-lines>
+    <ion-item>
+      <ion-label>Sump?</ion-label>
+      <ion-checkbox checked="false" [(ngModel)]="aquarium.sump_active" (ionChange)='updateTotalValue()'></ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="aquarium.sump_active">
+      <ion-item>
+        <ion-label>Sump Lengte</ion-label>
+        <ion-input type="number" [(ngModel)]="aquarium.sump_lngth" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+        <p item-right>cm</p>
+      </ion-item>
+  
+      <ion-item>
+        <ion-label>Sump Breedte</ion-label>
+        <ion-input type="number" [(ngModel)]="aquarium.sump_width" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+        <p item-right>cm</p>
+      </ion-item>
+  
+      <ion-item>
+          <ion-label>Water Hoogte Sump</ion-label>
+          <ion-input type="number" [(ngModel)]="aquarium.sump_waterheight" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+          <p item-right>cm</p>
+      </ion-item>
+  </ion-list>
+
+  
+  <ion-list no-lines>
+      <ion-item>
+        <ion-label>Refugium?</ion-label>
+        <ion-checkbox checked="false" [(ngModel)]="aquarium.refugium_active" (ionChange)='updateTotalValue()'></ion-checkbox>
+      </ion-item>
+    </ion-list>
+  
+    <ion-list *ngIf="aquarium.refugium_active">
+        <ion-item>
+          <ion-label>Refugium Lengte</ion-label>
+          <ion-input type="number" [(ngModel)]="aquarium.refugium_lngth" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+          <p item-right>cm</p>
+        </ion-item>
+    
+        <ion-item>
+          <ion-label>Refugium Breedte</ion-label>
+          <ion-input type="number" [(ngModel)]="aquarium.refugium_width" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+          <p item-right>cm</p>
+        </ion-item>
+    
+        <ion-item>
+            <ion-label>Water Hoogte Refugium</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.refugium_waterheight" (change)='updateTotalValue()' min="5" max="1000"></ion-input>
+            <p item-right>cm</p>
+        </ion-item>
+    </ion-list>
+
+    <ion-item>
+        <ion-label>Bruto water volume:</ion-label>
+        <ion-input type="number" [(ngModel)]="watervolumebruto" disabled="true"></ion-input>
+      <p item-right>l</p>
+    </ion-item>
+
+    <ion-list no-lines>
+        <ion-item>
+          <ion-label>Detail berekening reducties?</ion-label>
+          <ion-checkbox checked="true" [(ngModel)]="aquarium.detailedestimation_active" (ionChange)='updateTotalValue()'></ion-checkbox>
+        </ion-item>
+      </ion-list>
+    
+      <ion-list *ngIf="aquarium.detailedestimation_active">
+          <ion-item>
+            <ion-label>Steen Volume</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.de_rockformation" (change)='updateTotalValue()' min="0" max="1000"></ion-input>
+            <p item-right>kg</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Rock Type</ion-label>
+            <ion-select [(ngModel)]="aquarium.de_rockformationtype" (change)='updateTotalValue()'>
+              <ion-option *ngFor="let type of rocktypes" [value] = "type.name">{{type.descr}} ({{type.factor}})</ion-option>
+              <ion-option value="other">Custom Factor</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item *ngIf="aquarium.de_rockformationtype == 'other'">
+            <ion-label>Rock custom factor</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.de_rockformationcustomfactor"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Zand Volume</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.de_sandvolume" (change)='updateTotalValue()' min="0" max="1000"></ion-input>
+            <p item-right>kg</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Zand Type</ion-label>
+            <ion-select [(ngModel)]="aquarium.de_sandvolumetype" (change)='updateTotalValue()'>
+              <ion-option *ngFor="let type of sandtypes" [value] = "type.name">{{type.descr}} ({{type.factor}})</ion-option>
+              <ion-option value="other">Custom Factor</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item *ngIf="aquarium.de_sandvolumetype == 'other'">
+            <ion-label>Zand custom factor</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.de_sandvolumecustomfactor" (change)='updateTotalValue()'></ion-input>
+        </ion-item>
+
+      </ion-list>
+
+      <ion-item>
+        <ion-label>Totaal water volume:</ion-label>
+        <ion-input type="number" [(ngModel)]="watervolume" disabled="true"></ion-input>
+      <p item-right>l</p>
+    </ion-item>
+    <button (click)='next()' ion-button>Volgende</button>
+</ion-content>

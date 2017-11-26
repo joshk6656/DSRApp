@@ -1,0 +1,14 @@
+{
+  "name": "dsr-app-poc",
+  "app_id": "a74b6346",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  },
+  "proxies": [
+    {
+      "path": "/v1/user/login",
+      "proxyUrl": "https://us-central1-dsrreefingapp.cloudfunctions.net/"
+    }
+  ]
+}

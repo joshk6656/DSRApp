@@ -1,0 +1,48 @@
+<!--
+  Generated template for the AquariumdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{aquarium.name}} ({{aquarium.DSRmethod}})</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+    <ion-list *ngIf="nomeasurements">
+      Geen metingen gevonden.
+    </ion-list>
+
+
+  <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>Doseringen bekijken {{aquarium.DSRmethod}}</button>
+
+    <ion-list *ngFor="let measurement of measurementsreverse">
+      <ion-list-header>Deze week</ion-list-header>
+      
+      <div *ngFor="let parameter of parameters">
+        <ion-item *ngIf="measurement[parameter]">
+          <ion-avatar item-start>
+            <ion-icon *ngIf="measurement[parameter+'status'] == 'low'" name="arrow-dropup-circle"></ion-icon>
+            <ion-icon *ngIf="measurement[parameter+'status'] == 'high'" name="arrow-dropdown-circle"></ion-icon>
+            <ion-icon *ngIf="measurement[parameter+'status'] == 'perfect'" name="thumbs-up"></ion-icon>
+            <ion-icon *ngIf="measurement[parameter+'status'] == 'ok'" name="thumbs-up"></ion-icon>
+          </ion-avatar>
+          <h2>{{parameter}} ({{measurement[parameter]}})</h2>
+          <p>{{ measurement[parameter+'status'] === 'low' ? 'Moet omhoog' : (measurement[parameter+'status'] === 'high' ? 'Moet omlaag': (measurement[parameter+'status'] === 'ok' ? 'Goed': 'Perfect')) }}</p>
+          <ion-note item-end>{{ measurement.readabletom | date:"dd/MM" }}</ion-note>
+        </ion-item>
+      </div>
+
+    </ion-list>
+
+  <button (click)='addMeasurements()' ion-button>Metingen toevoegen</button>
+</ion-content>

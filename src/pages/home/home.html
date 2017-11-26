@@ -1,0 +1,25 @@
+
+
+<ion-content padding class="home">
+
+  <ion-grid style="height: 100%">
+    <ion-row justify-content-center align-items-center style="height: 10%">
+    
+    </ion-row>
+    <ion-row justify-content-center align-items-center style="height: 40%; color: #fff">
+        <img src="assets/imgs/DSRReefing.png" alt="DSR Reefing">
+    </ion-row>
+    <ion-row justify-content-center align-items-center style="height: 40%">
+        <section *ngIf="isLoggedIn">
+          Welcome {{user.displayName}}
+          <button ion-button full (click)="logout()" >Logout</button>
+        </section>
+      
+    
+      <button *ngIf="!isLoggedIn" ion-button full (click)="fbLogin()" class="loginBtn loginBtn--facebook">Login with Facebook</button>
+      <p>v0.1_alpha</p>
+    </ion-row>
+    
+  </ion-grid>
+
+</ion-content>
