@@ -1,6 +1,13 @@
 page-dashboard {
-
 }
+.background {
+  /* background image */
+  background: url('../assets/imgs/background.jpg') no-repeat; 
+  background-size: cover; 
+  background-position: center;
+  color: white;
+}
+
 .action-sheets-basic-page {
     .ion-md-share {
       color: #ED4248;

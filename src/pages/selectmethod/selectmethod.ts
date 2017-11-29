@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { AddmeasurementPage } from '../addmeasurement/addmeasurement';
+import { AquariumdetailsPage } from '../aquariumdetails/aquariumdetails';
 import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
-import { Http, Headers, RequestOptions } from '@angular/http';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 
 /**
@@ -17,12 +17,12 @@ import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
   templateUrl: 'selectmethod.html',
 })
 export class SelectmethodPage {
-  //aquarium = {DSRmethod: "UNKNOWN", name: "EMPTY"};
   aquariumid;
+  navigateTo;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dsrData: DsrDataProvider, public authService: AuthServiceProvider, public http: Http) {
-    //this.aquarium = navParams.get("aquarium");
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dsrData: DsrDataProvider, public authService: AuthServiceProvider) {
     this.aquariumid = navParams.get("aquariumid");
+    this.navigateTo = navParams.get("navigateTo");
   }
 
   ionViewDidLoad() {
@@ -32,36 +32,17 @@ export class SelectmethodPage {
   selectMethod(method) {
     console.log('Method selected is ' + method)
     let me = this;
-
-
-
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
-    let options = new RequestOptions({ headers: headers });
-    let params = {
-      "method": method,
-      "aquariumid": this.aquariumid
-    };
-    let urlSearchParams = new URLSearchParams();		
-    for(let keys in params){
-      urlSearchParams.append(keys, params[keys]);
-    }
-    let body = urlSearchParams.toString();
-    console.log("Body: " + body)
-    let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/setmethod', body, options);
-    jsonresponse.map(res => res.json()).subscribe(data => {
-      console.log('Aquarium add returned following data: ', JSON.stringify(data));
-
-      me.dsrData.aquariums[me.aquariumid].DSRmethod = method
-      //this.dsrData.setDSRMethod(this.aquarium.name, method, function (result) {
-        //if (result) {
-          /*me.dsrData.loadAquariums(function (res) {
-            if (res) {*/
-              me.navCtrl.push(AddmeasurementPage, {"aquariumid": me.aquariumid});
-            /*}
-          });*/
-        //}
-      //});
-    })
+    this.dsrData.setDSRMethod(me.aquariumid, method, function (result) {
+      if (result) {
+        if (me.navigateTo && me.navigateTo === "Details") {
+          me.navCtrl.push(AquariumdetailsPage, {"aquariumid": me.aquariumid});
+        } else {
+          me.navCtrl.push(AddmeasurementPage, {"aquariumid": me.aquariumid});
+        }
+      } else {
+        console.log("setMethod failed");
+      }
+    });
   }
 
 }

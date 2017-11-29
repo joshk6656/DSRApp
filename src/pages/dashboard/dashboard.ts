@@ -7,6 +7,7 @@ import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
 import { LoadingController } from 'ionic-angular';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { Platform, ActionSheetController } from 'ionic-angular';
+import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
 
 @Component({
   selector: 'page-dashboard',
@@ -14,31 +15,31 @@ import { Platform, ActionSheetController } from 'ionic-angular';
 })
 export class DashboardPage {
   public aquariums = {};
-  public aquariumkeys = [];
+  //public aquariumkeys = [];
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, private dsrData: DsrDataProvider, public authService: AuthServiceProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform) {
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public dsrData: DsrDataProvider, public authService: AuthServiceProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
     let me = this;
     let loader = this.loadingCtrl.create({
         content: "Loading..."
     });
-    console.log('Loading Dashboard')
+    this.log.debug('DashboardPage','constructor','Loading Dashboard');
     loader.present();
     this.dsrData.loadAquariums(function (result){
       if (result) {
-        console.log('Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums))
-        me.aquariumkeys = Object.keys(me.dsrData.aquariums);
+        me.log.debug('DashboardPage','constructor','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
+        me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
       }
       loader.dismiss();
     });
   }
 
   doRefresh(refresher) {
-    console.log('Begin async operation', refresher);
     let me = this;
+    this.log.debug('DashboardPage','doRefresh','Begin async operation');
     this.dsrData.loadAquariums(function (result){
       if (result) {
-        console.log('Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums))
-        me.aquariumkeys = Object.keys(me.dsrData.aquariums);
+        me.log.debug('DashboardPage','doRefresh','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
+        me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
       }
       refresher.complete();
     });
@@ -55,7 +56,6 @@ export class DashboardPage {
           role: 'destructive',
           icon: !this.platform.is('ios') ? 'heart-outline' : null,
           handler: () => {
-            console.log('Logout clicked');
             me.logout();
           }
         },
@@ -64,7 +64,7 @@ export class DashboardPage {
           role: 'cancel', // will always sort to be on the bottom
           icon: !this.platform.is('ios') ? 'close' : null,
           handler: () => {
-            console.log('Cancel clicked');
+            me.log.debug('DashboardPage','openMenu','Cancel clicked');
           }
         }
       ]
@@ -73,11 +73,11 @@ export class DashboardPage {
   }
 
   addaquariumstep1btn() {
-    console.log('Test')
+    this.log.debug('DashboardPage','addaquariumstep1btn','Add aquarium');
     this.navCtrl.push(Addaquariumstep1Page)
   }
   aquariumDetails(aquaid) {
-    console.log('Aquariumid: ' + aquaid)
+    this.log.debug('DashboardPage','aquariumDetails','Aquariumid: ' + aquaid);
     if (this.dsrData.aquariums[aquaid].DSRmethod == "UNKNOWN") {
       this.navCtrl.push(SelectmethodPage, {"aquariumid": aquaid});
     } else {
@@ -86,9 +86,10 @@ export class DashboardPage {
   }
 
   logout() {
+    let me = this;
     this.authService.logout(function (result) {
       if (!result) {
-        console.log("Logout of user failed");
+        me.log.error('DashboardPage','logout',"Logout of user failed");
       }
     })
   } 

@@ -3,6 +3,7 @@ import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { LoggerServiceProvider } from '../providers/logger-service/logger-service';
 //import { NavController, NavParams } from 'ionic-angular';
 
 import { AuthServiceProvider } from '../providers/auth-service/auth-service';
@@ -15,6 +16,7 @@ import { AngularFireAuth } from "angularfire2/auth";
 //import * as firebase from 'firebase';
 import { App } from 'ionic-angular';
 
+
 @Component({
   templateUrl: 'app.html',
   providers: [AngularFireAuth]
@@ -22,7 +24,7 @@ import { App } from 'ionic-angular';
 export class MyApp {
   rootPage:any = HomePage;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private afAuth: AngularFireAuth, private app:App, public authService: AuthServiceProvider) {//, public navCtrl: NavController) {
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private afAuth: AngularFireAuth, private app:App, public authService: AuthServiceProvider, private log: LoggerServiceProvider) {//, public navCtrl: NavController) {
     //let me = this;
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -32,7 +34,7 @@ export class MyApp {
 
       this.afAuth.authState.subscribe(user => {
         if (!user) {
-          console.log("Logged out")
+          this.log.info('AppComponents','afAuth.authState.subscribe','Logged out');
           authService.user_displayName = null;
           authService.user_uid = null;
           authService.user_email = null
@@ -50,7 +52,7 @@ export class MyApp {
         //this.app.getRootNav().setRoot(TabsPage)
         //this.app.getRootNav().setRoot(this.rootPage);
         //this.app.setRoot(Login);
-        console.log("Facebook authenticated: " + authService.user_displayName + " - " + authService.user_uid);
+        this.log.info('AppComponents','afAuth.authState.subscribe',"Authenticated: " + authService.user_displayName + " - " + authService.user_uid);
         //this.navCtrl.setRoot(HomePage);
         splashScreen.hide();
       });

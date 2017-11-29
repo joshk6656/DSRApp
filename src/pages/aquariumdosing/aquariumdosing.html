@@ -21,7 +21,7 @@
 
     <ion-list>
         <ion-list-header>Dosing volumes</ion-list-header>
-        <ion-card *ngIf="aquarium.DSRmethod === 'FULLDSR'">Full DSR heeft nog geen ondersteuning in huidige versie van de app.</ion-card>
+        <ion-card *ngIf="aquarium.DSRmethod === 'FULLDSR' || aquarium.DSRmethod === 'MIXED'">Full DSR en Mixed hebben nog geen ondersteuning in huidige versie van de app.</ion-card>
         
         <div *ngFor="let parameter of parameters">
           <ion-item>

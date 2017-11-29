@@ -1,6 +1,6 @@
 
 
-<ion-content padding class="home">
+<ion-content padding class="home" scroll="false">
 
   <ion-grid style="height: 100%">
     <ion-row justify-content-center align-items-center style="height: 10%">
@@ -16,8 +16,9 @@
         </section>
       
     
-      <button *ngIf="!isLoggedIn" ion-button full (click)="fbLogin()" class="loginBtn loginBtn--facebook">Login with Facebook</button>
-      <p>v0.1_alpha</p>
+      <button *ngIf="!isLoggedIn && enabledLogins.indexOf('facebook') >= 0" ion-button full (click)="fbLogin()" class="loginBtn loginBtn--facebook">Login with Facebook</button>
+      <button *ngIf="!isLoggedIn && enabledLogins.indexOf('googleplus') >= 0" ion-button full (click)="googleLogin()" class="loginBtn loginBtn--google">Login with Google</button>
+      <p>v{{appVersion}}</p>
     </ion-row>
     
   </ion-grid>

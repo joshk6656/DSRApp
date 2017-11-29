@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from "angularfire2/auth";
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
+import { Platform, AlertController } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 /*
   Generated class for the AuthServiceProvider provider.
@@ -16,7 +19,7 @@ export class AuthServiceProvider {
     public user_uid: String;
     public user_email: String;
 
-  constructor(public http: HttpClient, private afAuth: AngularFireAuth,) {
+  constructor(public http: HttpClient, private afAuth: AngularFireAuth, private fb: Facebook, private platform: Platform, private googlePlus: GooglePlus, public alertController : AlertController) {
     console.log('Hello AuthServiceProvider Provider');
   }
 
@@ -26,14 +29,74 @@ export class AuthServiceProvider {
     cb(true)
   }
 
+  displayAlert(value,title)
+  {
+      let coolAlert = this.alertController.create({
+      title: title,
+      message: JSON.stringify(value),
+      buttons: [
+                    {
+                        text: "OK"
+                    }
+               ]
+      });
+      coolAlert.present();
+ 
+  }
+
+  googleLogin(cb) {
+    if (this.platform.is('cordova')) {
+      let me = this
+      this.googlePlus.login({'webClientId': '820818360210-7dehonpah0l69l82l3feq7u25e6bhvvv.apps.googleusercontent.com'}).then(userData => {
+         var token = userData.idToken;
+         const googleCredential = firebase.auth.GoogleAuthProvider.credential(token, null);
+         firebase.auth().signInWithCredential(googleCredential).then((success) => {
+           console.log("Firebase success: " + JSON.stringify(success));
+          cb(true);
+         })
+         .catch((error) => {
+           console.log("Firebase failure: " + JSON.stringify(error));
+               me.displayAlert(error,"signInWithCredential failed")
+               cb(false);
+         });
+       }).catch((gplusErr) => {
+          console.log("GooglePlus failure: " + JSON.stringify(gplusErr));
+          this.displayAlert(JSON.stringify(gplusErr),"GooglePlus failed")
+          cb(false);
+       });
+     } else {
+      this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(user => {
+        console.log("Google login worked, using this to login on the server: " + JSON.stringify(user));
+        cb(true);
+      }).catch(err => {
+        console.log(err);
+        cb(false);
+      });
+     }
+  }
+
   fblogin(cb) {
-    this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider()).then(user => {
-      console.log("Facebook login worked, using this to login on the server: " + user.user.uid);
-      cb(true);
-    }) .catch(err => {
-      console.log(err);
-      cb(false);
-    })
+    if (this.platform.is('cordova')) {
+      this.fb.login(['email', 'public_profile']).then(res => {
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        if (firebase.auth().signInWithCredential(facebookCredential)) {
+          console.log("Facebook native login worked");
+          cb(true);
+        }
+      }) .catch(err => {
+        console.log(err);
+        cb(false);
+      })
+    }
+    else {
+      this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider()).then(user => {
+        console.log("Facebook login worked, using this to login on the server: " + user.user.uid);
+        cb(true);
+      }).catch(err => {
+        console.log(err);
+        cb(false);
+      });
+    }
   }
 
 }

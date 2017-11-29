@@ -5,7 +5,7 @@
             <ion-icon name="ios-add-circle-outline"></ion-icon>
           </button>
         </ion-buttons>
-      <ion-title>Dashboard</ion-title>
+      <ion-title>Aquariums</ion-title>
           <ion-buttons end>
             <button ion-button icon-only (click)="openMenu()">
               <ion-icon name="more"></ion-icon>
@@ -14,7 +14,7 @@
     </ion-navbar>
   </ion-header>
   
-  <ion-content padding class="action-sheets-basic-page">
+  <ion-content padding class="action-sheets-basic-page" class="background">
   <ion-refresher (ionRefresh)="doRefresh($event)" (ionPull)="doRefresh($event)">
       <ion-refresher-content
         pullingText="Pull to refresh..."
@@ -23,24 +23,25 @@
     </ion-refresher>
 
     <h2>Welkom DSR gebruiker</h2>
-    <ion-card *ngFor="let aqua of aquariumkeys">
+    <ion-card *ngFor="let aqua of dsrData.aquariumkeys">
       <div (click)="aquariumDetails(aqua)">
-      <img src="assets/img/bjork-live.jpg"/>
+      <!--<img src="assets/img/bjork-live.jpg"/>-->
       <ion-card-content>
           <ion-card-title>
             {{dsrData.aquariums[aqua].name}}
           </ion-card-title>
           <p>
-              L:{{dsrData.aquariums[aqua].aquarium_lngth}}/B:{{dsrData.aquariums[aqua].aquarium_width}}/H:{{dsrData.aquariums[aqua].aquarium_waterheight}}
+              L:{{dsrData.aquariums[aqua].aquarium_lngth}}/B:{{dsrData.aquariums[aqua].aquarium_width}}/H:{{dsrData.aquariums[aqua].aquarium_waterheight}}<br />
+              Methode: {{dsrData.aquariums[aqua].DSRmethod}}
           </p>
         </ion-card-content>
       </div>
       </ion-card>
-      <ion-list *ngIf="aquariumkeys.length == 0">
+      <ion-list *ngIf="dsrData.aquariumkeys.length == 0">
           <p>
             Klik op Aquarium Toevoegen om te starten op te geven.
           </p>
-          <button (click)='addaquariumstep1btn()' ion-button>Aquarium Toevoegen</button>
+          <button (click)='addaquariumstep1btn()' ion-button color="light">Aquarium Toevoegen</button>
       </ion-list>
       <!--<button ion-button (click)="logout()">Logout</button>-->
   </ion-content>  

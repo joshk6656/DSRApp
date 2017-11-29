@@ -3,7 +3,12 @@ page-home {
 }
 
 .home {
-    background: linear-gradient(to bottom,  #C6C8DA 0%, #74A7CE 100%);
+  //background: linear-gradient(to bottom,  #C6C8DA 0%, #74A7CE 100%);
+  /* homescreen background image */
+  background: url('../assets/imgs/background.jpg') no-repeat; 
+  background-size: cover; 
+  background-position: center;
+  color: white;
 }
 
 /* Shared */

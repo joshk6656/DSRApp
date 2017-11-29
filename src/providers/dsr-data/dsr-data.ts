@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
-
-//import { Storage } from '@ionic/storage';
+import { AlertController } from 'ionic-angular';
 
 /*
   Generated class for the DsrDataProvider provider.
@@ -15,6 +14,7 @@ import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 export class DsrDataProvider {
 
   public aquariums = {}
+  public aquariumkeys = []
 
   public measurementgoals = {
     ph: 8.1,
@@ -134,8 +134,23 @@ export class DsrDataProvider {
 
   results: string[];
   
-  constructor(public http: Http, public authService: AuthServiceProvider) {
+  constructor(public http: Http, public authService: AuthServiceProvider, public alertController : AlertController) {
     console.log('Hello DsrDataProvider Provider');
+  }
+
+  displayAlert(value,title)
+  {
+      let coolAlert = this.alertController.create({
+      title: title,
+      message: JSON.stringify(value),
+      buttons: [
+                    {
+                        text: "OK"
+                    }
+               ]
+      });
+      coolAlert.present();
+ 
   }
 
   loadAquariums(cb) {
@@ -143,43 +158,21 @@ export class DsrDataProvider {
 
     let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
     let options = new RequestOptions({ headers: headers });
-    /*let params = {
-      "method": method,
-      "aquariumid": this.aquariumid
-    };
-    let urlSearchParams = new URLSearchParams();		
-    for(let keys in params){
-      urlSearchParams.append(keys, params[keys]);
-    }
-    let body = urlSearchParams.toString();
-    console.log("Body: " + body)*/
     let jsonresponse = me.http.get('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/list', options);
     jsonresponse.map(res => res.json()).subscribe(data => {
       console.log('Data returned list of aquariums: ', JSON.stringify(data.message.list));
       if (data.message.list !== null) {
         me.aquariums = data.message.list
+        me.aquariumkeys = Object.keys(me.aquariums)
       } else {
         me.aquariums = []
       }
-      cb(true)
-      //this.aquarium.DSRmethod = method
-      //this.dsrData.setDSRMethod(this.aquarium.name, method, function (result) {
-        //if (result) {
-          //me.navCtrl.push(AddmeasurementPage, {"aquarium": me.aquarium});
-        //}
-      //});
-    })
-
-    /*this.storage.get('aquariums').then((val) => {
-      if (!val) {
-        val = []
-      } else {
-        val = JSON.parse(val);
-      }
-      console.log('Aquariums: ', val);
-      me.aquariums = val;
-      cb(true)
-    });*/
+      cb(true);
+    }, err => {
+      console.log("HTTP REQ failed with err: " + err);
+      me.displayAlert(err, "loadAquariums  failed")
+      cb(false)
+    });
   }
 
   loadMeasurements(aquariumid, cb) {
@@ -196,13 +189,7 @@ export class DsrDataProvider {
         measurements.push(data.message.measurements[item])
       }
       me.aquariums[aquariumid].measurements = measurements.reverse()//data.message.measurements
-      cb(true)
-      //this.aquarium.DSRmethod = method
-      //this.dsrData.setDSRMethod(this.aquarium.name, method, function (result) {
-        //if (result) {
-          //me.navCtrl.push(AddmeasurementPage, {"aquarium": me.aquarium});
-        //}
-      //});
+      cb(true);
     })
   }
 
@@ -234,32 +221,75 @@ export class DsrDataProvider {
     jsonresponse.map(res => res.json()).subscribe(data => {
       console.log('Aquarium add returned following data: ', JSON.stringify(data));
       let aquaid = data.message.aquariumid
-      
-      /*this.dsrData.addAquarium(data.message.aquariumid, this.aquarium, function (result) {
-        if (result) {
-          me.navCtrl.push(SelectmethodPage, {"aquarium": me.aquarium, "aquariumid": data.message.aquariumid});
-        }
-      })*/
       this.aquariums[aquaid] = aqua;
+      this.aquariumkeys = Object.keys(this.aquariums)
       cb(aquaid)
-
-    })
-
-    //this.aquariums[aquaid] = aqua;
-    //this.storage.set('aquariums', JSON.stringify(this.aquariums));
-    //cb(true)
+    }, err => {
+      console.log("HTTP REQ failed with err: " + err);
+      this.displayAlert(err, "addAquarium  failed")
+      cb(false)
+    });
   }
 
-  /*setDSRMethod(aquaname, method, cb){
-    let aqua = this.getAquarium(aquaname)
-    if (aqua) {
-      aqua.DSRmethod = method;
-      aqua.dosings = this.dosings[method][aqua.occupation];
-      this.storage.set('aquariums', JSON.stringify(this.aquariums));
-      cb(true);
+  setDSRMethod(aquariumid, method, cb){
+    let me = this;
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let options = new RequestOptions({ headers: headers });
+    let params = {
+      "method": method,
+      "aquariumid": aquariumid
+    };
+    let urlSearchParams = new URLSearchParams();		
+    for(let keys in params){
+      urlSearchParams.append(keys, params[keys]);
     }
-    cb(false);
-  }*/
+    let body = urlSearchParams.toString();
+    console.log("Body: " + body)
+    let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/setmethod', body, options);
+    jsonresponse.map(res => res.json()).subscribe(data => {
+      console.log('Aquarium add returned following data: ', JSON.stringify(data));
+      let occupation = me.aquariums[aquariumid].occupation
+      me.aquariums[aquariumid].DSRmethod = method
+      if (this.dosings.hasOwnProperty(method)) {
+        me.aquariums[aquariumid].dosings = this.dosings[method][occupation]
+      } else {
+        console.log("Cannot set dosings, DSR method not configured");
+      }
+      cb(true)
+    }, err => {
+      console.log("HTTP REQ failed with err: " + err);
+      this.displayAlert(err, "addAquarium  failed")
+      cb(false)
+    });
+  }
+
+  deleteAquarium(aquariumid, cb) {
+    let me = this;
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let options = new RequestOptions({ headers: headers });
+    let params = {
+      "aquariumid": aquariumid
+    };
+    let urlSearchParams = new URLSearchParams();		
+    for(let keys in params){
+      urlSearchParams.append(keys, params[keys]);
+    }
+    let body = urlSearchParams.toString();
+    console.log("Body: " + body)
+    let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/delete', body, options);
+    jsonresponse.map(res => res.json()).subscribe(data => {
+      console.log('Aquarium delete returned following data: ', JSON.stringify(data));
+      //let occupation = me.aquariums[aquariumid].occupation
+      console.log(me.aquariums)
+      delete me.aquariums[aquariumid]
+      this.aquariumkeys = Object.keys(this.aquariums)
+      cb(true)
+    }, err => {
+      console.log("HTTP REQ failed with err: " + err);
+      this.displayAlert(err, "deleteAquarium  failed")
+      cb(false)
+    });
+  }
 
   getAquarium(aquaname) {
     for (let i in this.aquariums) {
@@ -283,7 +313,6 @@ export class DsrDataProvider {
         }
       }
       //aqua.measurements.unshift(newmeasurementfiltered);
-      //this.storage.set('aquariums', JSON.stringify(this.aquariums));
 
       let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
       let options = new RequestOptions({ headers: headers });
@@ -298,15 +327,12 @@ export class DsrDataProvider {
       let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/measurement/add', body, options);
       jsonresponse.map(res => res.json()).subscribe(data => {
         console.log('Measurement add returned following data: ', JSON.stringify(data));
-        
-        /*me.dsrData.addAquarium(this.aquarium, function (result) {
-          if (result) {
-            me.navCtrl.push(SelectmethodPage, {"aquarium": me.aquarium, "aquariumid": data.message.aquariumid});
-          }
-        })*/
         cb(true);
-  
-      })
+      }, err => {
+        console.log("HTTP REQ failed with err: " + err);
+        this.displayAlert(err, "addAquarium  failed")
+        cb(false)
+      });
     } else {
       console.log("aquariumid: " + aquariumid + " not found");
       cb(false);

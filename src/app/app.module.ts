@@ -1,6 +1,7 @@
 import { NgModule, ErrorHandler } from '@angular/core';
+import { BugsnagErrorHandler } from '../error-handler'
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { IonicApp, IonicModule } from 'ionic-angular';/*, IonicErrorHandler*/
 import { MyApp } from './app.component';
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -31,6 +32,9 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 //import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 import { AuthServiceProvider } from '../providers/auth-service/auth-service';
+import { Facebook } from '@ionic-native/facebook';
+import { GooglePlus } from '@ionic-native/google-plus';
+import { LoggerServiceProvider } from '../providers/logger-service/logger-service';
 
 let firebaseconfig = {
   apiKey: "AIzaSyCpvbpx6StGtfQb1kLc7M9POfUBBknjEAo",
@@ -84,11 +88,15 @@ firebase.initializeApp(firebaseconfig);
   ],
   providers: [
     StatusBar,
+    LoggerServiceProvider,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    {provide: ErrorHandler, useClass: BugsnagErrorHandler},//BugsnagErrorHandler},IonicErrorHandler
     DsrDataProvider,
     AngularFireAuth,
-    AuthServiceProvider
+    AuthServiceProvider,
+    Facebook,
+    GooglePlus,
+    LoggerServiceProvider
   ]
 })
 export class AppModule {}

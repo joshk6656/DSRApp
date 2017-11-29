@@ -4,6 +4,9 @@ import { AddmeasurementPage } from '../addmeasurement/addmeasurement';
 import { AquariumdosingPage } from '../aquariumdosing/aquariumdosing';
 import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
 import { LoadingController } from 'ionic-angular';
+import { Platform, ActionSheetController } from 'ionic-angular';
+import { SelectmethodPage } from '../selectmethod/selectmethod';
+//import { DashboardPage } from '../../pages/dashboard/dashboard';
 
 
 /**
@@ -24,7 +27,7 @@ export class AquariumdetailsPage {
   public measurementsreverse = [];
   public aquariumid;
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider) {
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform) {
     let me = this;
     this.aquariumid = navParams.get("aquariumid");
     this.aquarium = this.dsrData.aquariums[this.aquariumid]
@@ -67,6 +70,53 @@ export class AquariumdetailsPage {
       me.parameters = Object.keys(me.dsrData.measurementgoals);
       me.printMessages()
     }
+  }
+
+  openMenu() {
+    let me = this;
+    let dashboardActions = this.actionsheetCtrl.create({
+      title: 'Aquarium Acties',
+      cssClass: 'action-sheets-basic-page',
+      buttons: [
+        {
+          text: 'Wijzig DSR Methode',
+          icon: !this.platform.is('ios') ? 'heart-outline' : null,
+          handler: () => {
+            console.log('Edit DSR Method');
+            me.navCtrl.push(SelectmethodPage, {"aquariumid": this.aquariumid, "navigateTo": "Details"});
+          }
+        },
+        {
+          text: 'Verwijderen',
+          role: 'destructive',
+          icon: !this.platform.is('ios') ? 'heart-outline' : null,
+          handler: () => {
+            console.log("Delete Aquarium triggered");
+            me.deleteAquarium();
+            me.navCtrl.popToRoot()
+          }
+        },
+        {
+          text: 'Sluiten',
+          role: 'cancel', // will always sort to be on the bottom
+          icon: !this.platform.is('ios') ? 'close' : null,
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    dashboardActions.present();
+  }
+
+  deleteAquarium() {
+    this.dsrData.deleteAquarium(this.aquariumid, function (result){
+      if (result) {
+        console.log('Aquarium removed')
+      } else {
+        console.log("Could not remove aquarium");
+      }
+    });
   }
 
   printMessages() {
