@@ -32,11 +32,16 @@ $RECYCLE.BIN/
 
 src/app/**/*.js
 src/app/**/*.map
+src/app/**/*.metadata.json
+src/app/**/*.ngsummary.json
 src/pages/**/*.js
 src/pages/**/*.map
+src/pages/**/*.metadata.json
+src/pages/**/*.ngsummary.json
 src/providers/**/*.js
 src/providers/**/*.map
-
+src/providers/**/*.metadata.json
+src/providers/**/*.ngsummary.json
 
 .DS_Store
 Thumbs.db
