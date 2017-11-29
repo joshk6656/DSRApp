@@ -32,12 +32,15 @@
               <ion-icon *ngIf="aquarium.dosings[parameter]['status'] == 'ok'" name="thumbs-up"></ion-icon>
             </ion-avatar>
             <h2 *ngIf="aquarium.dosings[parameter].correctionvalue == undefined">{{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
-            <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined" class="secondary">* {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
+            <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined && aquarium.dosings[parameter].correctiontype != '%'" class="secondary">* {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
+            <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined && aquarium.dosings[parameter].correctiontype == '%'" class="secondary">** {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
             <p item-right> per dag</p>
             <p *ngIf="aquarium.dosings[parameter].correctionvalue != undefined">Normal value: {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</p>
           </ion-item>
         </div>
-        <p *ngIf="correctionvalues">(*) Verhoogde/verlaagde dosering gedurende het verloop van 1 week.</p>
+        <p *ngIf="correctionvalues">(*) Verhoogde/verlaagde dosering gedurende het verloop van 1 week. <br />
+          (**) Dagelijkse verhoging met x % Vanaf de gemeten datum voor max 7 dagen.
+        </p>
   
       </ion-list>
 </ion-content>

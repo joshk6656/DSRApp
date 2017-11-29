@@ -29,7 +29,7 @@ export class DashboardPage {
         me.log.debug('DashboardPage','constructor','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
         me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
       }
-      loader.dismiss();
+      loader.dismiss().catch(() => me.log.debug('DashboardPage','constructor','Caught exception on dismiss()')); // https://github.com/ionic-team/ionic/issues/10046
     });
   }
 

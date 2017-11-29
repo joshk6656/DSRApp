@@ -195,13 +195,13 @@ export class DsrDataProvider {
 
   checkOnTarget(key, value) {
     if (this.measurementgoals[key] == value) {
-      console.log(key+" on target with value: " + value)
+      //console.log(key+" on target with value: " + value)
       return 0;
     } else if (value > this.measurementgoals[key]) {
-      console.log(key+" above target with value: " + value)
+      //console.log(key+" above target with value: " + value)
       return this.measurementgoals[key] - value;
     } else if (value < this.measurementgoals[key]) {
-      console.log(key+" below target with value: " + value)
+      //console.log(key+" below target with value: " + value)
       return this.measurementgoals[key] - value;
     }
   }

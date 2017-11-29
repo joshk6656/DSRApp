@@ -25,7 +25,7 @@ export class MyApp {
   rootPage:any = HomePage;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private afAuth: AngularFireAuth, private app:App, public authService: AuthServiceProvider, private log: LoggerServiceProvider) {//, public navCtrl: NavController) {
-    //let me = this;
+    let me = this;
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -39,6 +39,7 @@ export class MyApp {
           authService.user_uid = null;
           authService.user_email = null
           authService.isLoggedIn = false;
+          me.log.setUser({"isLoggedIn": false});
           this.rootPage = HomePage;
           //me.navCtrl.setRoot(HomePage);
           this.app.getRootNav().setRoot(this.rootPage);
@@ -47,6 +48,7 @@ export class MyApp {
         authService.user_displayName = user.displayName;
         authService.user_email = user.email;
         authService.user_uid = user.uid;
+        me.log.setUser({"uid": user.uid, "displayName": user.displayName, "isLoggedIn": true});
         authService.isLoggedIn = true;
         this.rootPage = TabsPage;
         //this.app.getRootNav().setRoot(TabsPage)

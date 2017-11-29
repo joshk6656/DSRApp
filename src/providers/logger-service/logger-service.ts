@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-//import { Bugsnag } from '../../assets/js/bugsnag-3.min.js';
-
-/// <reference path="../../bugsnag.d.ts" />
+import { Bugsnag } from '../../error-handler';
 
 /*
   Generated class for the LoggerServiceProvider provider.
@@ -20,12 +18,17 @@ export class LoggerServiceProvider {
 		this.lastEvents=[];
     this.maxEvents=30;
     //console.log(Bugsnag)
-		//Bugsnag.releaseStage = "development";
-		this.activateConsoleLog = true;
+		Bugsnag.releaseStage = "development";
+    this.activateConsoleLog = true;
+    this.setAppVersion("0.0.10");
   }
 
 	setAppVersion(version) {
-		//Bugsnag.appVersion = version;
+		Bugsnag.appVersion = version;
+  }
+
+  setUser(obj) {
+    Bugsnag.user = obj;
   }
 	
 	warning(pageName,msg,functionName){
@@ -46,7 +49,7 @@ export class LoggerServiceProvider {
 		if (this.lastEvents.length > this.maxEvents) this.lastEvents.pop();
 		//this.lastEvents.unshift({pagename :pageName,msg:msg, funcName:functionName,log_type:type});
 		this.lastEvents.unshift(type.toUpperCase()+' : ' + pageName + '/' + functionName + ': ' + msg);
-		//if (type !== "info" && type !== "debug") Bugsnag.notify(type.toUpperCase()+' DETECTED on '+pageName, msg , { 'LoggerService': this.lastEvents }, type);
+		if (type !== "info" && type !== "debug") Bugsnag.notify(type.toUpperCase()+' DETECTED on '+pageName, msg , { 'LoggerService': this.lastEvents }, type);
 				
 	}
 }
