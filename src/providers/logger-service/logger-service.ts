@@ -11,7 +11,8 @@ import { Bugsnag } from '../../error-handler';
 export class LoggerServiceProvider {
 	private lastEvents:any;
   private maxEvents:any;
-	private activateConsoleLog: boolean;
+  private activateConsoleLog: boolean;
+  public version = "0.0.13";
   	
   constructor() {
     console.log('Hello LoggerServiceProvider Provider');
@@ -20,7 +21,7 @@ export class LoggerServiceProvider {
     //console.log(Bugsnag)
 		Bugsnag.releaseStage = "development";
     this.activateConsoleLog = true;
-    this.setAppVersion("0.0.10");
+    this.setAppVersion(this.version);
   }
 
 	setAppVersion(version) {
@@ -44,12 +45,12 @@ export class LoggerServiceProvider {
 		this.applyLastEvent(pageName,msg,functionName,'debug');
 	}
 
-	applyLastEvent(pageName,msg,functionName,type){
+	applyLastEvent(pageName,functionName, msg,type){
 		if (this.activateConsoleLog) console.log(type.toUpperCase()+' '+ pageName +' - '+'Msg:'+msg +','+ 'Function:' +functionName);
 		if (this.lastEvents.length > this.maxEvents) this.lastEvents.pop();
 		//this.lastEvents.unshift({pagename :pageName,msg:msg, funcName:functionName,log_type:type});
 		this.lastEvents.unshift(type.toUpperCase()+' : ' + pageName + '/' + functionName + ': ' + msg);
-		if (type !== "info" && type !== "debug") Bugsnag.notify(type.toUpperCase()+' DETECTED on '+pageName, msg , { 'LoggerService': this.lastEvents }, type);
+		if (type !== "info" && type !== "debug") Bugsnag.notify(type.toUpperCase()+' DETECTED on '+pageName + ' ('+functionName+') ', msg , { 'LoggerService': this.lastEvents }, type);
 				
 	}
 }

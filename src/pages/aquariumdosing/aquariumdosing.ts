@@ -21,39 +21,47 @@ export class AquariumdosingPage {
   dosings;
   correctionvalues = false;
   aquariumid;
+  DSRmethod = "EZ";
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private dsrData: DsrDataProvider, private log: LoggerServiceProvider) {
     this.aquariumid = navParams.get("aquariumid");
     this.aquarium = this.dsrData.aquariums[this.aquariumid]
 
-    this.calculateDosings();
+    this.DSRmethod = this.aquarium.DSRmethod;
+    this.calculateDosings(this.DSRmethod);
   }
 
-  calculateDosings() {
-    if (!this.dsrData.dosings.hasOwnProperty(this.aquarium.DSRmethod)) {
-      this.log.warning('AquariumdosingPage','calculateDosings','DSR Method not supported: ' + this.aquarium.DSRmethod);
+  calculateDosings(DSRmethod) {
+    if (!this.dsrData.dosings.hasOwnProperty(DSRmethod)) {
+      this.log.info('AquariumdosingPage','calculateDosings','DSR Method not supported: ' + DSRmethod);
       return;
     }
 
-    this.aquarium.dosings = (this.aquarium.DSRmethod === "EZ" ? this.dsrData.dosings[this.aquarium.DSRmethod][this.aquarium.occupation] : this.dsrData.dosings[this.aquarium.DSRmethod])
+    this.aquarium.dosings = (DSRmethod === "EZ" ? this.dsrData.dosings[DSRmethod][this.aquarium.occupation] : this.dsrData.dosings[DSRmethod])
     this.parameters = Object.keys(this.aquarium.dosings);
 
     if (this.aquarium.measurements.length < 1) {
       this.nomeasurements = true;
-      this.log.info('AquariumdosingPage','calculateDosings','No measurements, use default dosing for: ' + this.aquarium.DSRmethod);
+      this.log.info('AquariumdosingPage','calculateDosings','No measurements, use default dosing for: ' + DSRmethod);
       return;
     }
 
     if (this.aquarium.measurements.length >= 1) {
       let lastmeasurement = this.aquarium.measurements[0]
+      console.log(lastmeasurement)
       this.log.debug('AquariumdosingPage','calculateDosings','lastmeasurement: ' + JSON.stringify(lastmeasurement));
+      let dosingcorrections = this.dsrData.dosingcorrections[this.DSRmethod]
 
       for (let id in this.parameters) {
         let parameter = this.parameters[id];
         //console.log("Check if lastmeasurement has parameter: " + parameter + " and if onebeforelastmeasurement has parameter: " + parameter);
         console.log(parameter.toUpperCase()+":");
         //console.log(lastmeasurement)
-        if (lastmeasurement.hasOwnProperty(parameter)) {// && onebeforelastmeasurement.hasOwnProperty(parameter)) {
+        if (!dosingcorrections.hasOwnProperty(parameter)) {
+          this.log.warning('AquariumdosingPage','calculateDosings','dosingcorrections missing parameter:' + parameter + " for DSRmethod: " + this.DSRmethod);
+          continue;
+        }
+        if (lastmeasurement.hasOwnProperty(parameter)) {
           this.aquarium.dosings[parameter]["status"] = lastmeasurement[parameter+"status"];
           let dosinggoal;
           let diff;
@@ -64,11 +72,11 @@ export class AquariumdosingPage {
             console.log(parameter+" on target, keep dosing same value. Dosing goal: " + dosinggoal);
             this.aquarium.dosings[parameter]["correctionvalue"] = null;
           } else if (checkOnTarget < 0) {
-            dosinggoal = this.dsrData.dosingcorrections[parameter].hasOwnProperty("reverseddosing") ? "up": "down";
+            dosinggoal = dosingcorrections[parameter].hasOwnProperty("reverseddosing") ? "up": "down";
             diff = checkOnTarget * -1;
             console.log("ABOVE target, need to lower parameter with: " + diff + " - Dosing goal: " + dosinggoal);
           } else {
-            dosinggoal = this.dsrData.dosingcorrections[parameter].hasOwnProperty("reverseddosing") ? "down" : "up";
+            dosinggoal = dosingcorrections[parameter].hasOwnProperty("reverseddosing") ? "down" : "up";
             diff = checkOnTarget
             console.log("BELOW target, need to increase parameter with: " + diff + " - Dosing goal: " + dosinggoal);
           }
@@ -77,7 +85,7 @@ export class AquariumdosingPage {
           let decreaseddosing = 0;
           if (dosinggoal == "down") {
             // Check if dosing correction type is %, in that case, it should be increased/decreased daily.
-            if (this.dsrData.dosingcorrections[parameter].hasOwnProperty("correctiontype") && this.dsrData.dosingcorrections[parameter]["correctiontype"] == "%") {
+            if (dosingcorrections[parameter].hasOwnProperty("correctiontype") && dosingcorrections[parameter]["correctiontype"] == "%") {
               this.aquarium.dosings[parameter]["correctiontype"] = "%";
               let day = this.daysBetweenNowAndMeasurement(lastmeasurement["readabletom"])
               if (day > 7) day = 7; // Limit decrease to max 7 days per measurement
@@ -88,15 +96,15 @@ export class AquariumdosingPage {
                 this.aquarium.dosings[parameter]["day"] = day;
               }
               for (let i = 0; i < day; i++) {
-                let decreasepercentage = ((this.dsrData.dosingcorrections[parameter]["correctionfactor"] / 100) + 1)
+                let decreasepercentage = ((dosingcorrections[parameter]["correctionfactor"] / 100) + 1)
                 decreaseddosing = decreaseddosing + ((totaldecreasedosing + decreaseddosing) * decreasepercentage)
                 console.log("decreaseddosing : " + decreaseddosing);
               }
               totaldecreasedosing = totaldecreasedosing - decreaseddosing
-              console.log("% DOSING: Need to decrease dosing with daily("+this.dsrData.dosingcorrections[parameter]["correctionfactor"]+"%), on day "+day+" reaching: " + decreaseddosing + " resulting in a total dose of: " + totaldecreasedosing);
+              console.log("% DOSING: Need to decrease dosing with daily("+dosingcorrections[parameter]["correctionfactor"]+"%), on day "+day+" reaching: " + decreaseddosing + " resulting in a total dose of: " + totaldecreasedosing);
               this.aquarium.dosings[parameter]["correctionvalue"] = decreaseddosing;
             } else {
-              let todecreasedosing = (this.dsrData.dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
+              let todecreasedosing = (dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
               decreaseddosing = (todecreasedosing/7);
               let totaldecreasedosing = normaldosing - decreaseddosing
               console.log("NORMAL DOSING: Total decrease dosing with: " + todecreasedosing + " - devided by 7 days: " + decreaseddosing + " increased with normal dosis of " + normaldosing + " = " + totaldecreasedosing);
@@ -107,7 +115,7 @@ export class AquariumdosingPage {
             }
           } else if (dosinggoal == "up") {
             // Check if dosing correction type is %, in that case, it should be increased/decreased daily.
-            if (this.dsrData.dosingcorrections[parameter].hasOwnProperty("correctiontype") && this.dsrData.dosingcorrections[parameter]["correctiontype"] == "%") {
+            if (dosingcorrections[parameter].hasOwnProperty("correctiontype") && dosingcorrections[parameter]["correctiontype"] == "%") {
               this.aquarium.dosings[parameter]["correctiontype"] = "%";
               let day = this.daysBetweenNowAndMeasurement(lastmeasurement["readabletom"])
               if (day > 7) day = 7; // Limit increase to max 7 days per measurement
@@ -118,14 +126,14 @@ export class AquariumdosingPage {
                 this.aquarium.dosings[parameter]["day"] = day;
               }
               for (let i = 0; i < day; i++) {
-                let increasepercentage = ((this.dsrData.dosingcorrections[parameter]["correctionfactor"] / 100))
+                let increasepercentage = ((dosingcorrections[parameter]["correctionfactor"] / 100))
                 increaseddosing = increaseddosing + ((totalincreasedosing+increaseddosing) * increasepercentage)
               }
               totalincreasedosing = totalincreasedosing + increaseddosing
-              console.log("% DOSING: Need to increase dosing with daily("+this.dsrData.dosingcorrections[parameter]["correctionfactor"]+"%), on day "+day+" reaching: " + increaseddosing + " resulting in a total dose of: " + totalincreasedosing);
+              console.log("% DOSING: Need to increase dosing with daily("+dosingcorrections[parameter]["correctionfactor"]+"%), on day "+day+" reaching: " + increaseddosing + " resulting in a total dose of: " + totalincreasedosing);
               this.aquarium.dosings[parameter]["correctionvalue"] = totalincreasedosing;
             } else {
-              let toincreaseddosing = (this.dsrData.dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
+              let toincreaseddosing = (dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
               increaseddosing = (toincreaseddosing/7);
               let totalincreaseddosing = normaldosing + increaseddosing;
               console.log("NORMAL DOSING: Total increase dosing with: " + toincreaseddosing + " - devided by 7 days: " + increaseddosing + " increased with normal dosis of " + normaldosing + " = " + totalincreaseddosing);
@@ -135,9 +143,12 @@ export class AquariumdosingPage {
           if (this.aquarium.dosings[parameter].hasOwnProperty("correctionvalue")) {
             this.correctionvalues = true;
           }
+        } else {
+          console.log("No measurement found for parameter:" + parameter)
+          this.aquarium.dosings[parameter].missingmeasurement = true;
         }
           
-        if (parameter == "mg" && lastmeasurement.hasOwnProperty("ca") && !lastmeasurement.hasOwnProperty("mg") ) {
+        if (this.DSRmethod === "EZ" && parameter == "mg" && lastmeasurement.hasOwnProperty("ca") && !lastmeasurement.hasOwnProperty("mg") ) {
           console.log("MG triggered, setting this with CA value")
           if (this.aquarium.dosings["ca"].hasOwnProperty("correctionvalue") && this.aquarium.dosings["ca"]["correctionvalue"]) {
             console.log("Setting correctionvalue")

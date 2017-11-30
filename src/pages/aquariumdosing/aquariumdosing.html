@@ -10,6 +10,19 @@
     <ion-title>{{aquarium.name}} ({{aquarium.DSRmethod}})</ion-title>
   </ion-navbar>
 
+  <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="DSRmethod">
+      <ion-segment-button value="EZ" (click)="calculateDosings('EZ')">
+        EZ
+      </ion-segment-button>
+      <ion-segment-button value="FULLDSR" (click)="calculateDosings('FULLDSR')">
+        FULL DSR
+      </ion-segment-button>
+      <!--<ion-segment-button value="MIXED" (click)="calculateDosings('MIXED')">
+        Mixed
+      </ion-segment-button>-->
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 
@@ -21,7 +34,11 @@
 
     <ion-list>
         <ion-list-header>Dosing volumes</ion-list-header>
-        <ion-card *ngIf="aquarium.DSRmethod === 'FULLDSR' || aquarium.DSRmethod === 'MIXED'">Full DSR en Mixed hebben nog geen ondersteuning in huidige versie van de app.</ion-card>
+        <ion-card *ngIf="DSRmethod === 'FULLDSR' || DSRmethod === 'MIXED'">
+          <ion-item text-wrap style="background-color:coral; color: white;">
+            Full DSR en Mixed APP calculators zijn nog in vroege ontwikkelingsfase!.
+          </ion-item>
+        </ion-card>
         
         <div *ngFor="let parameter of parameters">
           <ion-item>
@@ -36,6 +53,7 @@
             <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined && aquarium.dosings[parameter].correctiontype == '%'" class="secondary">** {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
             <p item-right> per dag</p>
             <p *ngIf="aquarium.dosings[parameter].correctionvalue != undefined">Normal value: {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</p>
+            <p *ngIf="aquarium.dosings[parameter].missingmeasurement">Geen meting gevonden</p>
           </ion-item>
         </div>
         <p *ngIf="correctionvalues">(*) Verhoogde/verlaagde dosering gedurende het verloop van 1 week. <br />

@@ -18,10 +18,11 @@ import { LoggerServiceProvider } from '../../providers/logger-service/logger-ser
   providers: []
 })
 export class HomePage {
-  appVersion = "0.0.10";
+  appVersion;
   enabledLogins = ["googleplus", "facebook"];
 
   constructor(public navCtrl: NavController, public authService: AuthServiceProvider, private log: LoggerServiceProvider) {
+    this.appVersion = this.log.version;
     if (this.authService.isLoggedIn) {
       this.navCtrl.setRoot(DashboardPage);
     }

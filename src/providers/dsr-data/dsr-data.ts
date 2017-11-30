@@ -84,22 +84,80 @@ export class DsrDataProvider {
   }
 
   dosingcorrections = {
-    "kh": {
-      "correctionfactor": 0.167,
-      "correctiontype": "ml"
+    "EZ": {
+      "kh": {
+        "correctionfactor": 0.167,
+        "correctiontype": "ml"
+      },
+      "ca": {
+        "correctionfactor": 0.00578,
+        "correctiontype": "ml"
+      },
+      "no3": {
+        "correctionfactor": 7,
+        "correctiontype": "%",
+        "reverseddosing": true
+      },
+      "mg": {
+        "correctionfactor": 0.00289,
+        "correctiontype": "ml"
+      }
     },
-    "ca": {
-      "correctionfactor": 0.00578,
-      "correctiontype": "ml"
-    },
-    "no3": {
-      "correctionfactor": 7,
-      "correctiontype": "%",
-      "reverseddosing": true
-    },
-    "mg": {
-      "correctionfactor": 0.00289,
-      "correctiontype": "ml"
+    "FULLDSR": {
+      "salinity": {
+        "correctionfactor": 100/100,
+        "correctiontype": "g"
+      },
+      "kh": {
+        "correctionfactor": 3/100,
+        "correctiontype": "g"
+      },
+      "ca": {
+        "correctionfactor": 0.3668/100,
+        "correctiontype": "g"
+      },
+      "no3": {
+        "correctionfactor": 7/100,
+        "correctiontype": "%",
+        "reverseddosing": true
+      },
+      /*"po4": {
+        "correctionfactor": 7,
+        "correctiontype": "%",
+        "reverseddosing": true
+      },*/
+      "po4": {
+        "correctionfactor": 10/100,
+        "correctiontype": "ml"
+      },
+      "mg": {
+        "correctionfactor": 0.836/100,
+        "correctiontype": "g"
+      },
+      "kalium": {
+        "correctionfactor": 0.667/100,
+        "correctiontype": "ml"
+      },
+      "strontium": {
+        "correctionfactor": 3.04/100,
+        "correctiontype": "ml"
+      },
+      "boor": {
+        "correctionfactor": 12.68/100,
+        "correctiontype": "ml"
+      },
+      "jodide": {
+        "correctionfactor": 26/100,
+        "correctiontype": "ml"
+      },
+      "mangaan": {
+        "correctionfactor": 1/100,
+        "correctiontype": "ml"
+      },
+      "iron": {
+        "correctionfactor": 0.4975/100,
+        "correctiontype": "ml"
+      }
     }
   }
 
@@ -129,6 +187,21 @@ export class DsrDataProvider {
         "no3": {"productname": "EZ-Carbon", "dosing": 2.00, "unit": "ml" },
         "mg": {"productname": "EZ-Trace", "dosing": 0.4, "unit": "ml" }
       }
+    },
+    "FULLDSR": {
+      "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
+      "kh": {"productname": "KH+", "dosing": 0.00, "unit": "g"},
+      "ca": {"productname": "Ca+", "dosing": 0.00, "unit": "g"},
+      "mg": {"productname": "Mg+", "dosing": 0.00, "unit": "g"},
+      "kalium": {"productname": "K+", "dosing": 0.00, "unit": "g"},
+      "strontium": {"productname": "Sr+", "dosing": 0.00, "unit": "g"},
+      "boor": {"productname": "B+", "dosing": 0.00, "unit": "g"},
+      "jodide": {"productname": "I+", "dosing": 0.00, "unit": "g"},
+      "mangaan": {"productname": "Mn+", "dosing": 0.00, "unit": "g"},
+      "no3": {"productname": "CarbonVS", "dosing": 1.00, "unit": "g"},
+      //"po4": {"productname": "Fe+", "dosing": 0.00, "unit": "g"},
+      "po4": {"productname": "PO4+", "dosing": 0.00, "unit": "g"},
+      "iron": {"productname": "Fe+", "dosing": 0.00, "unit": "g"}
     }
   }
 
