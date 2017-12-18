@@ -15,7 +15,7 @@
   </ion-header>
   
   <ion-content padding class="action-sheets-basic-page" class="background">
-  <ion-refresher (ionRefresh)="doRefresh($event)" (ionPull)="doRefresh($event)">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content
         pullingText="Pull to refresh..."
         refreshingText="Refreshing...">
@@ -33,7 +33,7 @@
           <p>
               L:{{dsrData.aquariums[aqua].aquarium_lngth}}/B:{{dsrData.aquariums[aqua].aquarium_width}}/H:{{dsrData.aquariums[aqua].aquarium_waterheight}}<br />
               Methode: {{dsrData.aquariums[aqua].DSRmethod}} <br />
-              Netto watervolume: {{dsrData.aquariums[aqua].totalwatervolume}} <br />
+              Netto watervolume: {{dsrData.aquariums[aqua].totalwatervolume}} L<br />
               Locatie: {{dsrData.aquariums[aqua].location}} ({{dsrData.aquariums[aqua].country}})
           </p>
         </ion-card-content>

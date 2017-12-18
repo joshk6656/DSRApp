@@ -18,6 +18,8 @@ export class AuthServiceProvider {
     public user_displayName: String;
     public user_uid: String;
     public user_email: String;
+    public user_birthday: String;
+    public user_name: String;
 
   constructor(public http: HttpClient, private afAuth: AngularFireAuth, private fb: Facebook, private platform: Platform, private googlePlus: GooglePlus, public alertController : AlertController) {
     console.log('Hello AuthServiceProvider Provider');
@@ -47,7 +49,7 @@ export class AuthServiceProvider {
   googleLogin(cb) {
     if (this.platform.is('cordova')) {
       let me = this
-      this.googlePlus.login({'webClientId': '820818360210-7dehonpah0l69l82l3feq7u25e6bhvvv.apps.googleusercontent.com'}).then(userData => {
+      this.googlePlus.login({'webClientId': '820818360210-bmp20pkjamrnehco7h3lv3osk0ql6mkg.apps.googleusercontent.com'}).then(userData => {
          var token = userData.idToken;
          const googleCredential = firebase.auth.GoogleAuthProvider.credential(token, null);
          firebase.auth().signInWithCredential(googleCredential).then((success) => {

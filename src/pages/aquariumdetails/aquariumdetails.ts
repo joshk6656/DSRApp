@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { AddmeasurementPage } from '../addmeasurement/addmeasurement';
-import { AquariumdosingPage } from '../aquariumdosing/aquariumdosing';
-import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
 import { LoadingController } from 'ionic-angular';
 import { Platform, ActionSheetController } from 'ionic-angular';
+
+import { AddmeasurementPage } from '../addmeasurement/addmeasurement';
+import { AquariumdosingPage } from '../aquariumdosing/aquariumdosing';
 import { SelectmethodPage } from '../selectmethod/selectmethod';
-//import { DashboardPage } from '../../pages/dashboard/dashboard';
+import { Addaquariumstep1Page } from '../addaquariumstep1/addaquariumstep1';
+import { HelpdetailsPage } from '../helpdetails/helpdetails';
+
+import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
+import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
 
 
 /**
@@ -24,52 +28,19 @@ export class AquariumdetailsPage {
   public aquarium = {"measurements": [], "targetvalues": [], "name": "", "DSRmethod": "UNKNOWN"};
   nomeasurements = false;
   parameters = [];
-  public measurementsreverse = [];
+  public measurements = [];
   public aquariumid;
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform) {
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
     let me = this;
     this.aquariumid = navParams.get("aquariumid");
-    this.aquarium = this.dsrData.aquariums[this.aquariumid]
-    console.log("Print aquarium:")
-    console.log(me.dsrData.aquariums[me.aquariumid])
-    console.log(this.aquarium)
-    console.log(!me.dsrData.aquariums[me.aquariumid].hasOwnProperty("measurements"))
-    //console.log(Object.keys(me.dsrData.aquariums[me.aquariumid]["measurements"]).length)
-    if (!me.dsrData.aquariums[me.aquariumid].hasOwnProperty("measurements") || Object.keys(me.dsrData.aquariums[me.aquariumid]["measurements"]).length < 1) {
-        
-      let loader = this.loadingCtrl.create({
-          content: "Loading..."
-      });
-      console.log('Loading Details')
-      loader.present();
-      this.dsrData.loadMeasurements(this.aquariumid, function (result){
-        if (result) {
-          console.log('Aquarium measurements loaded: ' + JSON.stringify(me.dsrData.aquariums[me.aquariumid]["measurements"]))
-          if (!me.dsrData.aquariums[me.aquariumid]["measurements"]) {
-            me.dsrData.aquariums[me.aquariumid]["measurements"] = []
-          } else {
-            me.aquarium["measurements"] = me.dsrData.aquariums[me.aquariumid]["measurements"]
-          }
-        }
-        loader.dismiss();
-        me.measurementsreverse = me.aquarium["measurements"]//me.dsrData.aquariums[me.aquariumid]["measurements"]//this.dsrData.sortMeasurementsByKey(this.aquarium.measurements, "tom")//.reverse();
-        me.parameters = Object.keys(me.dsrData.measurementgoals);//me.aquarium.targetvalues);
-        console.log(me.measurementsreverse )
-        me.printMessages()
-      });
-    } else {
-      let measurements = []
-      for (let item in me.dsrData.aquariums[me.aquariumid]["measurements"]) {
-        me.dsrData.aquariums[me.aquariumid]["measurements"][item]["key"] = item
-        measurements.push(me.dsrData.aquariums[me.aquariumid]["measurements"][item])
-      }
-      dsrData.aquariums[me.aquariumid].measurements = measurements.reverse()//data.message.measurements
-      me.aquarium["measurements"] = me.dsrData.aquariums[me.aquariumid]["measurements"];
-      me.measurementsreverse = me.aquarium["measurements"];
-      me.parameters = Object.keys(me.dsrData.measurementgoals);
-      me.printMessages()
-    }
+    this.log.debug('AquariumdetailsPage','constructor','Loading aquariumid: ' + this.aquariumid);
+    this.aquarium = this.dsrData.aquariums[this.aquariumid];
+    this.log.setAquarium(this.aquarium);
+    me.measurements = me.dsrData.getMeasurements(me.aquariumid);
+    this.log.debug('AquariumdetailsPage','constructor','Aquarium: ' + this.aquarium);
+    me.parameters = Object.keys(me.dsrData.measurementgoals);
+    me.printMeasurements();
   }
 
   openMenu() {
@@ -84,6 +55,14 @@ export class AquariumdetailsPage {
           handler: () => {
             console.log('Edit DSR Method');
             me.navCtrl.push(SelectmethodPage, {"aquariumid": this.aquariumid, "navigateTo": "Details"});
+          }
+        },
+        {
+          text: 'Wijzig Aquarium',
+          icon: !this.platform.is('ios') ? 'heart-outline' : null,
+          handler: () => {
+            console.log('Edit Aquarium');
+            me.navCtrl.push(Addaquariumstep1Page, {"aquariumid": this.aquariumid, "navigateTo": "Details"});
           }
         },
         {
@@ -110,23 +89,25 @@ export class AquariumdetailsPage {
   }
 
   deleteAquarium() {
+    let me = this;
     this.dsrData.deleteAquarium(this.aquariumid, function (result){
       if (result) {
-        console.log('Aquarium removed')
+        this.log.debug('AquariumdetailsPage','deleteAquarium','Removed aquarium: ' + me.aquariumid);
       } else {
-        console.log("Could not remove aquarium");
+        this.log.warning('AquariumdetailsPage','deleteAquarium','Could not remove aquarium: ' + me.aquariumid);
       }
     });
   }
 
-  printMessages() {
+  printMeasurements() {
     let me = this;
-    if (me.aquarium.measurements.length < 1) {
+    if (!me.aquarium.hasOwnProperty("measurements") || me.aquarium.measurements.length < 1) {
       me.nomeasurements = true;
     } else {
       for (let measurement in me.aquarium.measurements) {
         let targets = me.dsrData.measurementgoals
-        me.aquarium.measurements[measurement].readabletom = new Date(me.aquarium.measurements[measurement].tom * 1000).toISOString().slice(0,10)
+        me.aquarium.measurements[measurement].readabletom = new Date(Number(me.aquarium.measurements[measurement]["key"]) * 1000).toISOString().slice(0,10)
+        console.log(me.aquarium.measurements[measurement].readabletom);
         for (let value in me.aquarium.measurements[measurement]) {
           console.log("measurement: " + value);
           if (value === "aquariumid") continue;
@@ -160,13 +141,14 @@ export class AquariumdetailsPage {
         if (!me.dsrData.aquariums[me.aquariumid]["measurements"]) {
           me.dsrData.aquariums[me.aquariumid]["measurements"] = []
         } else {
-          me.aquarium["measurements"] = me.dsrData.aquariums[me.aquariumid]["measurements"]
+          let measurements = me.dsrData.getMeasurements(me.aquariumid);
+          me.aquarium["measurements"] = measurements;//me.dsrData.aquariums[me.aquariumid]["measurements"]
         }
       }
-      me.measurementsreverse = me.aquarium["measurements"]//me.dsrData.aquariums[me.aquariumid]["measurements"]//this.dsrData.sortMeasurementsByKey(this.aquarium.measurements, "tom")//.reverse();
+      me.measurements= me.aquarium["measurements"]//.reverse()//me.dsrData.aquariums[me.aquariumid]["measurements"]//this.dsrData.sortMeasurementsByKey(this.aquarium.measurements, "tom")//.reverse();
       me.parameters = Object.keys(me.dsrData.measurementgoals);//me.aquarium.targetvalues);
-      console.log(me.measurementsreverse )
-      me.printMessages()
+      //console.log(me.measurementsreverse )
+      me.printMeasurements()
       refresher.complete();
     });
   }
@@ -180,6 +162,9 @@ export class AquariumdetailsPage {
   }
   checkDosings() {
     this.navCtrl.push(AquariumdosingPage, {"aquariumid": this.aquariumid});
+  }
+  showInfo(parameter, measurement) {
+    this.navCtrl.push(HelpdetailsPage, {"question": "Wat is "+parameter+"?"});
   }
 
 }

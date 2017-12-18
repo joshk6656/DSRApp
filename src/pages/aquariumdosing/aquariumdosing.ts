@@ -18,6 +18,7 @@ export class AquariumdosingPage {
   public aquarium;// {"measurements": [], "targetvalues": [], "name": "", "dosings": {}, "totalwatervolume": 0, "DSRmethod": "UNKNOWN"};
   nomeasurements = false;
   parameters;
+  correctionparameters;
   dosings;
   correctionvalues = false;
   aquariumid;
@@ -33,21 +34,26 @@ export class AquariumdosingPage {
 
   calculateDosings(DSRmethod) {
     if (!this.dsrData.dosings.hasOwnProperty(DSRmethod)) {
-      this.log.info('AquariumdosingPage','calculateDosings','DSR Method not supported: ' + DSRmethod);
+      this.log.warning('AquariumdosingPage','calculateDosings','DSR Method not supported: ' + DSRmethod);
       return;
     }
-
+    this.log.info('AquariumdosingPage','calculateDosings','Calculating dosings for: ' + DSRmethod);
     this.aquarium.dosings = (DSRmethod === "EZ" ? this.dsrData.dosings[DSRmethod][this.aquarium.occupation] : this.dsrData.dosings[DSRmethod])
     this.parameters = Object.keys(this.aquarium.dosings);
+    
 
-    if (this.aquarium.measurements.length < 1) {
+    let measurements = this.dsrData.getMeasurements(this.aquariumid);
+
+    if (measurements.length < 1) {
       this.nomeasurements = true;
       this.log.info('AquariumdosingPage','calculateDosings','No measurements, use default dosing for: ' + DSRmethod);
       return;
     }
 
-    if (this.aquarium.measurements.length >= 1) {
-      let lastmeasurement = this.aquarium.measurements[0]
+    if (measurements.length >= 1) {
+      console.log(measurements);
+      console.log(measurements.length - 1);
+      let lastmeasurement = measurements[0];
       console.log(lastmeasurement)
       this.log.debug('AquariumdosingPage','calculateDosings','lastmeasurement: ' + JSON.stringify(lastmeasurement));
       let dosingcorrections = this.dsrData.dosingcorrections[this.DSRmethod]
@@ -61,7 +67,10 @@ export class AquariumdosingPage {
           this.log.warning('AquariumdosingPage','calculateDosings','dosingcorrections missing parameter:' + parameter + " for DSRmethod: " + this.DSRmethod);
           continue;
         }
+        console.log(lastmeasurement)
+        console.log(lastmeasurement.hasOwnProperty(parameter))
         if (lastmeasurement.hasOwnProperty(parameter)) {
+          this.aquarium.dosings[parameter].missingmeasurement = false;
           this.aquarium.dosings[parameter]["status"] = lastmeasurement[parameter+"status"];
           let dosinggoal;
           let diff;
@@ -96,16 +105,22 @@ export class AquariumdosingPage {
                 this.aquarium.dosings[parameter]["day"] = day;
               }
               for (let i = 0; i < day; i++) {
-                let decreasepercentage = ((dosingcorrections[parameter]["correctionfactor"] / 100) + 1)
+                let decreasepercentage = ((dosingcorrections[parameter]["correctionfactor"] / 100))
                 decreaseddosing = decreaseddosing + ((totaldecreasedosing + decreaseddosing) * decreasepercentage)
-                console.log("decreaseddosing : " + decreaseddosing);
+                console.log("decreasepercentage: " + decreasepercentage + " and decreaseddosing : " + decreaseddosing);
               }
               totaldecreasedosing = totaldecreasedosing - decreaseddosing
               console.log("% DOSING: Need to decrease dosing with daily("+dosingcorrections[parameter]["correctionfactor"]+"%), on day "+day+" reaching: " + decreaseddosing + " resulting in a total dose of: " + totaldecreasedosing);
-              this.aquarium.dosings[parameter]["correctionvalue"] = decreaseddosing;
+              this.aquarium.dosings[parameter]["correctionvalue"] = totaldecreasedosing;
             } else {
               let todecreasedosing = (dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
-              decreaseddosing = (todecreasedosing/7);
+              /*let correctiondays = 7
+              if (dosingcorrections[parameter]["unit"] === 'g' && dosingcorrections[parameter].hasOwnProperty("maxcorrectionperday")) {
+                correctiondays = (diff > dosingcorrections[parameter]["maxcorrectionperday"] ? Math.ceil(diff / dosingcorrections[parameter]["maxcorrectionperday"]) : 1);
+                console.log("Setting correctiondays to: " + correctiondays);
+                this.aquarium.dosings[parameter]["correctiondays"] = correctiondays;
+              }
+              decreaseddosing = (todecreasedosing/correctiondays);*/
               let totaldecreasedosing = normaldosing - decreaseddosing
               console.log("NORMAL DOSING: Total decrease dosing with: " + todecreasedosing + " - devided by 7 days: " + decreaseddosing + " increased with normal dosis of " + normaldosing + " = " + totaldecreasedosing);
               this.aquarium.dosings[parameter]["correctionvalue"] = totaldecreasedosing;
@@ -134,7 +149,18 @@ export class AquariumdosingPage {
               this.aquarium.dosings[parameter]["correctionvalue"] = totalincreasedosing;
             } else {
               let toincreaseddosing = (dosingcorrections[parameter]["correctionfactor"] * this.aquarium.totalwatervolume * diff)
-              increaseddosing = (toincreaseddosing/7);
+              let correctiondays = 7
+              console.log(dosingcorrections[parameter]);
+              console.log(dosingcorrections[parameter].hasOwnProperty("maxcorrectionperday"));
+              if (dosingcorrections[parameter].hasOwnProperty("maxcorrectionperday")) {
+                correctiondays = (diff > dosingcorrections[parameter]["maxcorrectionperday"] ? Math.ceil(diff / dosingcorrections[parameter]["maxcorrectionperday"]) : 1);
+                if (dosingcorrections[parameter]["correctiontype"] === "ml" && correctiondays < 7) {
+                  correctiondays = 7;
+                }
+                console.log("Setting correctiondays to: " + correctiondays);
+                this.aquarium.dosings[parameter]["correctiondays"] = correctiondays;
+              }
+              increaseddosing = (toincreaseddosing/correctiondays);
               let totalincreaseddosing = normaldosing + increaseddosing;
               console.log("NORMAL DOSING: Total increase dosing with: " + toincreaseddosing + " - devided by 7 days: " + increaseddosing + " increased with normal dosis of " + normaldosing + " = " + totalincreaseddosing);
               this.aquarium.dosings[parameter]["correctionvalue"] = totalincreaseddosing;

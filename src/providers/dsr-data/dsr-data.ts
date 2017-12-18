@@ -3,6 +3,7 @@ import 'rxjs/add/operator/map';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { AlertController } from 'ionic-angular';
+import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
 
 /*
   Generated class for the DsrDataProvider provider.
@@ -12,13 +13,16 @@ import { AlertController } from 'ionic-angular';
 */
 @Injectable()
 export class DsrDataProvider {
+  public faqitems;
+  public faqsearcheditems;
 
   public aquariums = {}
   public aquariumkeys = []
+  public triggerLoadAquariums = true;
 
   public measurementgoals = {
     ph: 8.1,
-    salinity: 35,
+    salinity: 33,
     kh: 9,
     ca: 440,
     mg: 1350,
@@ -77,6 +81,8 @@ export class DsrDataProvider {
     de_sandvolume: 0.00,
     de_sandvolumecustomfactor: 0.75,
     detailedestimation_active: true,
+    volumecorrection_active: false,
+    volumecorrection: 0.00,
     totalwatervolume: 0.00//,
     //targetvalues: this.measurementgoals,
     //measurements: [],
@@ -85,13 +91,20 @@ export class DsrDataProvider {
 
   dosingcorrections = {
     "EZ": {
+      "salinity": {
+        "correctionfactor": 100/100,
+        "correctiontype": "g",
+        "maxcorrectionperday": 2
+      },
       "kh": {
         "correctionfactor": 0.167,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 1
       },
       "ca": {
         "correctionfactor": 0.00578,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 20
       },
       "no3": {
         "correctionfactor": 7,
@@ -100,26 +113,31 @@ export class DsrDataProvider {
       },
       "mg": {
         "correctionfactor": 0.00289,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 50
       }
     },
     "FULLDSR": {
       "salinity": {
         "correctionfactor": 100/100,
-        "correctiontype": "g"
+        "correctiontype": "g",
+        "maxcorrectionperday": 2
       },
       "kh": {
         "correctionfactor": 3/100,
-        "correctiontype": "g"
+        "correctiontype": "g",
+        "maxcorrectionperday": 1
       },
       "ca": {
         "correctionfactor": 0.3668/100,
-        "correctiontype": "g"
+        "correctiontype": "g",
+        "maxcorrectionperday": 20
       },
       "no3": {
         "correctionfactor": 7/100,
         "correctiontype": "%",
-        "reverseddosing": true
+        "reverseddosing": true,
+        "maxcorrectionperday": 2
       },
       /*"po4": {
         "correctionfactor": 7,
@@ -128,31 +146,38 @@ export class DsrDataProvider {
       },*/
       "po4": {
         "correctionfactor": 10/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 0.04
       },
       "mg": {
         "correctionfactor": 0.836/100,
-        "correctiontype": "g"
+        "correctiontype": "g",
+        "maxcorrectionperday": 50
       },
       "kalium": {
         "correctionfactor": 0.667/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 20
       },
       "strontium": {
         "correctionfactor": 3.04/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 3
       },
       "boor": {
         "correctionfactor": 12.68/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 2
       },
       "jodide": {
         "correctionfactor": 26/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 0.03
       },
       "mangaan": {
         "correctionfactor": 1/100,
-        "correctiontype": "ml"
+        "correctiontype": "ml",
+        "maxcorrectionperday": 0.1
       },
       "iron": {
         "correctionfactor": 0.4975/100,
@@ -164,24 +189,28 @@ export class DsrDataProvider {
   dosings = {
     "EZ": {
       "EMPTY": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
         "kh": {"productname": "EZ-Buffer", "dosing": 0.00, "unit": "ml" },
         "ca": {"productname": "EZ-Calcium", "dosing": 0.00, "unit": "ml" },
         "no3": {"productname": "EZ-Carbon", "dosing": 1.00, "unit": "ml" },
         "mg": {"productname": "EZ-Trace", "dosing": 0.00, "unit": "ml" }
       },
       "LOW": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
         "kh": {"productname": "EZ-Buffer", "dosing": 2.00, "unit": "ml" },
         "ca": {"productname": "EZ-Calcium", "dosing": 0.4, "unit": "ml"  },
         "no3": {"productname": "EZ-Carbon", "dosing": 1.50, "unit": "ml" },
         "mg": {"productname": "EZ-Trace", "dosing": 0.2, "unit": "ml" }
       },
       "MID": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
         "kh": {"productname": "EZ-Buffer", "dosing": 4.00, "unit": "ml"  },
         "ca": {"productname": "EZ-Calcium", "dosing": 0.8, "unit": "ml" },
         "no3": {"productname": "EZ-Carbon", "dosing": 2.00, "unit": "ml" },
         "mg": {"productname": "EZ-Trace", "dosing": 0.4, "unit": "ml" }
       },
       "HIGH": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
         "kh": {"productname": "EZ-Buffer", "dosing": 4.00, "unit": "ml" },
         "ca": {"productname": "EZ-Calcium", "dosing": 0.8, "unit": "ml" },
         "no3": {"productname": "EZ-Carbon", "dosing": 2.00, "unit": "ml" },
@@ -205,10 +234,42 @@ export class DsrDataProvider {
     }
   }
 
+  /*corrections = {
+    "EZ": {
+      "EMPTY": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"}
+      },
+      "LOW": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"}
+      },
+      "MID": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"}
+      },
+      "HIGH": {
+        "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"}
+      }
+    },
+    "FULLDSR": {
+      "salinity": {"productname": "NaCl+ Salt", "dosing": 0.00, "unit": "g"},
+      "kh": {"productname": "KH+", "dosing": 0.00, "unit": "g"},
+      "ca": {"productname": "Ca+", "dosing": 0.00, "unit": "g"},
+      "mg": {"productname": "Mg+", "dosing": 0.00, "unit": "g"},
+      "kalium": {"productname": "K+", "dosing": 0.00, "unit": "g"},
+      "strontium": {"productname": "Sr+", "dosing": 0.00, "unit": "g"},
+      "boor": {"productname": "B+", "dosing": 0.00, "unit": "g"},
+      "jodide": {"productname": "I+", "dosing": 0.00, "unit": "g"},
+      "mangaan": {"productname": "Mn+", "dosing": 0.00, "unit": "g"},
+      "no3": {"productname": "CarbonVS", "dosing": 1.00, "unit": "g"},
+      //"po4": {"productname": "Fe+", "dosing": 0.00, "unit": "g"},
+      "po4": {"productname": "PO4+", "dosing": 0.00, "unit": "g"},
+      "iron": {"productname": "Fe+", "dosing": 0.00, "unit": "g"}
+    }
+  }*/
+
   results: string[];
   
-  constructor(public http: Http, public authService: AuthServiceProvider, public alertController : AlertController) {
-    console.log('Hello DsrDataProvider Provider');
+  constructor(public http: Http, public authService: AuthServiceProvider, public alertController : AlertController, private log: LoggerServiceProvider) {
+    //console.log('Hello DsrDataProvider Provider');
   }
 
   displayAlert(value,title)
@@ -229,41 +290,62 @@ export class DsrDataProvider {
   loadAquariums(cb) {
     let me = this;
 
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});	
     let options = new RequestOptions({ headers: headers });
     let jsonresponse = me.http.get('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/list', options);
     jsonresponse.map(res => res.json()).subscribe(data => {
-      console.log('Data returned list of aquariums: ', JSON.stringify(data.message.list));
-      if (data.message.list !== null) {
-        me.aquariums = data.message.list
-        me.aquariumkeys = Object.keys(me.aquariums)
+      if (data.hasOwnProperty("returncode") && data.returncode == 200) {
+        console.log('Data returned list of aquariums: ', JSON.stringify(data.message.list));
+        if (data.message.list !== null) {
+          me.aquariums = data.message.list
+          me.aquariumkeys = Object.keys(me.aquariums)
+        } else {
+          me.aquariums = []
+        }
+        me.triggerLoadAquariums = false;
+        cb(null, true);
       } else {
-        me.aquariums = []
+        console.log("Error while loading aquariums, error:" + (data.hasOwnProperty("error") ? data.error : "UNDEFINED"));
+        cb(data.hasOwnProperty("error") ? data.error : "UNDEFINED", false);
       }
-      cb(true);
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
       me.displayAlert(err, "loadAquariums  failed")
-      cb(false)
+      cb(err, false)
     });
   }
 
   loadMeasurements(aquariumid, cb) {
     let me = this;
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});	
     let options = new RequestOptions({ headers: headers });
     let jsonresponse = me.http.get('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/measurements?key=' + encodeURIComponent(aquariumid), options);
     jsonresponse.map(res => res.json()).subscribe(data => {
       console.log("Response:" + JSON.stringify(data))
       console.log('Data returned list of measurements: ', JSON.stringify(data.message.measurements));
-      let measurements = []
-      for (let item in data.message.measurements) {
+      /*let measurements = []
+      for (let item in Object.keys(data.message.measurements)) {
         data.message.measurements[item]["key"] = item
         measurements.push(data.message.measurements[item])
-      }
-      me.aquariums[aquariumid].measurements = measurements.reverse()//data.message.measurements
+      }*/
+      me.aquariums[aquariumid].measurements = data.message.measurements //measurements.reverse()
       cb(true);
     })
+  }
+
+  getMeasurements(aquariumid, reverse=true) {
+    let measurements = []
+    for (let item in this.aquariums[aquariumid]["measurements"]) {
+      //me.dsrData.aquariums[me.aquariumid]["measurements"][item]["key"] = item
+      let tom = item;
+      let arr = this.aquariums[aquariumid]["measurements"][item];
+      if (!arr.hasOwnProperty("key")) {
+        arr["key"] = tom;
+      }
+      measurements.push(arr)
+    }
+    return this.sortMeasurementsByKey(measurements, "key", reverse) 
+    //return measurements;
   }
 
   checkOnTarget(key, value) {
@@ -280,13 +362,12 @@ export class DsrDataProvider {
   }
 
   addAquarium(aqua, cb) {
-
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
     let options = new RequestOptions({ headers: headers });
     let params = aqua;
     let urlSearchParams = new URLSearchParams();		
-    for(let keys in params){
-      urlSearchParams.append(keys, params[keys]);
+    for(let key in params){
+      urlSearchParams.append(key, params[key]);
     }
     let body = urlSearchParams.toString();
     console.log("Body: " + body)
@@ -304,9 +385,37 @@ export class DsrDataProvider {
     });
   }
 
+  updateAquarium(aquariumid, aqua, cb) {
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
+    let options = new RequestOptions({ headers: headers });
+    let params = aqua;
+    let urlSearchParams = new URLSearchParams();
+    //urlSearchParams.append("aquariumid", aquariumid);
+    for(let key in params){
+      if (["measurements"].indexOf(key) == -1) {
+        urlSearchParams.append(key, params[key]);
+      }
+    }
+    let body = urlSearchParams.toString();
+    console.log("Body: " + body)
+    let jsonresponse = this.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/update', body, options);
+    jsonresponse.map(res => res.json()).subscribe(data => {
+      console.log('Aquarium update returned following data: ', JSON.stringify(data));
+      //console.log(data.message.aquariumid)
+      let aquaid = data.message.aquariumid
+      this.aquariums[aquaid] = aqua;
+      this.aquariumkeys = Object.keys(this.aquariums)
+      cb(aquaid)
+    }, err => {
+      console.log("HTTP REQ failed with err: " + err);
+      this.displayAlert(err, "addAquarium  failed")
+      cb(false)
+    });
+  }
+
   setDSRMethod(aquariumid, method, cb){
     let me = this;
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
     let options = new RequestOptions({ headers: headers });
     let params = {
       "method": method,
@@ -338,7 +447,7 @@ export class DsrDataProvider {
 
   deleteAquarium(aquariumid, cb) {
     let me = this;
-    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+    let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
     let options = new RequestOptions({ headers: headers });
     let params = {
       "aquariumid": aquariumid
@@ -373,7 +482,7 @@ export class DsrDataProvider {
     return false;
   }
 
-  addMeasurement(aquariumid, newmeasurement, cb) {
+  addMeasurement(aquariumid, newmeasurement, tom, cb) {
     console.log("addMeasurement triggered for: " + aquariumid)
     console.log(this.aquariums)
     let aqua = this.aquariums[aquariumid]
@@ -387,11 +496,12 @@ export class DsrDataProvider {
       }
       //aqua.measurements.unshift(newmeasurementfiltered);
 
-      let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid});//,'x-appversion':'1.0'});	
+      let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
       let options = new RequestOptions({ headers: headers });
       let params = newmeasurementfiltered;
       let urlSearchParams = new URLSearchParams();
       urlSearchParams.append("aquariumid", aquariumid);	
+      //urlSearchParams.append("tom", tom);	
       for(let keys in params){
         urlSearchParams.append(keys, params[keys]);
       }
@@ -412,19 +522,65 @@ export class DsrDataProvider {
     }
   }
 
-  sortMeasurementsByKey(objs, key) {
-    console.log("Ordering: " + JSON.stringify(objs));
+  sortMeasurementsByKey(arr, key, reverse) {
+    console.log(reverse);
+    if (!arr.hasOwnProperty(key)) {
+      console.log("Key: "+key+" not found in sortMeasurementsByKey");
+      console.log(arr);
+    }
+    console.log("Ordering: " + JSON.stringify(arr));
     function compare(a,b) {
-      if (a[key] < b[key])
+      if ((!reverse && a[key] < b[key]) || (reverse && a[key] > b[key]))
         return -1;
-      if (a[key] > b[key])
+      if ((!reverse && a[key] > b[key]) || (reverse && a[key] < b[key]))
         return 1;
       return 0;
     }
     
-    objs.sort(compare);
-    console.log("Ordering result: " + JSON.stringify(objs));
-    return objs;
+    arr.sort(compare);
+    console.log("Ordering result: " + JSON.stringify(arr));
+    return arr;
+  }
+
+  loadFAQItems(cb) {
+    let me = this;
+    this.http.get('assets/data/FAQ.json').map(res => res.json()).subscribe(function (data) {
+      me.faqsearcheditems = data
+      me.faqitems = data
+      cb(true);
+    }, function(e){
+      console.log("e");
+      console.log(e);
+      cb(false);
+    })
+  }
+
+  getFAQanswer(question, cb) {
+    let me = this;
+    if (typeof this.faqitems === "undefined") {
+      this.loadFAQItems(function (result) {
+        if (result) {
+          me.log.info('DsrDataProvider','getFAQanswer','loadFAQItems faqitems loaded: ' + JSON.stringify(me.faqitems) + " for question: " + question);
+          for (let i in me.faqitems) {
+            if (me.faqitems[i].q == question) {
+              cb(me.faqitems[i].a);
+              return;
+            }
+          }
+        } else {
+          me.log.warning('DsrDataProvider','getFAQanswer','loadFAQItems failed: ' + result);
+        }
+        cb(false);
+      });
+    } else {
+      for (let i in this.faqitems) {
+        if (this.faqitems[i].q == question) {
+          cb(this.faqitems[i].a);
+          return;
+        }
+      }
+      cb(false);
+    }
   }
 
   /*getLocalData(data){

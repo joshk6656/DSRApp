@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Bugsnag } from '../../error-handler';
+import { AlertController } from 'ionic-angular';
 
 /*
   Generated class for the LoggerServiceProvider provider.
@@ -12,13 +13,11 @@ export class LoggerServiceProvider {
 	private lastEvents:any;
   private maxEvents:any;
   private activateConsoleLog: boolean;
-  public version = "0.0.13";
+  public version = "0.0.18";
   	
-  constructor() {
-    console.log('Hello LoggerServiceProvider Provider');
+  constructor(public alertCtrl: AlertController) {
 		this.lastEvents=[];
     this.maxEvents=30;
-    //console.log(Bugsnag)
 		Bugsnag.releaseStage = "development";
     this.activateConsoleLog = true;
     this.setAppVersion(this.version);
@@ -30,7 +29,13 @@ export class LoggerServiceProvider {
 
   setUser(obj) {
     Bugsnag.user = obj;
-  }
+	}
+
+	setAquarium(obj) {
+		Bugsnag.metaData = {
+			"aquarium": obj
+		}
+	}
 	
 	warning(pageName,msg,functionName){
 		this.applyLastEvent(pageName,msg,functionName,'warning');
@@ -53,4 +58,13 @@ export class LoggerServiceProvider {
 		if (type !== "info" && type !== "debug") Bugsnag.notify(type.toUpperCase()+' DETECTED on '+pageName + ' ('+functionName+') ', msg , { 'LoggerService': this.lastEvents }, type);
 				
 	}
+
+  showAlert(title, subTitle, buttonsArray) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      subTitle: subTitle,
+      buttons: buttonsArray
+    });
+    alert.present();
+  }
 }

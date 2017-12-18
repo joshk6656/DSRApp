@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
+
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
-import { DashboardPage } from '../../pages/dashboard/dashboard';
 import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
+
+import { DashboardPage } from '../../pages/dashboard/dashboard';
 
 /**
  * Generated class for the DashboardPage page.
@@ -21,8 +24,12 @@ export class HomePage {
   appVersion;
   enabledLogins = ["googleplus", "facebook"];
 
-  constructor(public navCtrl: NavController, public authService: AuthServiceProvider, private log: LoggerServiceProvider) {
+  constructor(public navCtrl: NavController, public authService: AuthServiceProvider, private log: LoggerServiceProvider, public plt: Platform) {
     this.appVersion = this.log.version;
+    if (this.plt.is('android')) {
+      this.enabledLogins = ["facebook"];
+    }
+    this.log.setAquarium({});
     if (this.authService.isLoggedIn) {
       this.navCtrl.setRoot(DashboardPage);
     }

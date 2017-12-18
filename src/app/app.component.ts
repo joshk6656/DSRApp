@@ -37,7 +37,9 @@ export class MyApp {
           this.log.info('AppComponents','afAuth.authState.subscribe','Logged out');
           authService.user_displayName = null;
           authService.user_uid = null;
-          authService.user_email = null
+          authService.user_email = null;
+          //authService.user_birthday = null;
+          //authService.user_name = null;
           authService.isLoggedIn = false;
           me.log.setUser({"isLoggedIn": false});
           this.rootPage = HomePage;
@@ -48,6 +50,8 @@ export class MyApp {
         authService.user_displayName = user.displayName;
         authService.user_email = user.email;
         authService.user_uid = user.uid;
+        //authService.user_birthday = user.birthday;
+        //authService.user_name = user.name;
         me.log.setUser({"uid": user.uid, "displayName": user.displayName, "isLoggedIn": true});
         authService.isLoggedIn = true;
         this.rootPage = TabsPage;

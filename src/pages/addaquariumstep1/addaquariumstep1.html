@@ -7,7 +7,8 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Aquarium Toevoegen</ion-title>
+    <ion-title *ngIf="mode == 'ADD'">Aquarium Toevoegen</ion-title>
+    <ion-title *ngIf="mode == 'EDIT'">Aquarium Wijzigen</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -17,7 +18,7 @@
   <h2>Overzicht</h2>
   <ion-list>
     <ion-item>
-      <ion-label>Aquarium Naam</ion-label>
+      <ion-label>*Aquarium Naam</ion-label>
       <ion-input type="text" [(ngModel)]="aquarium.name"></ion-input>
     </ion-item>
     <ion-item>
@@ -36,7 +37,7 @@
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-label>Gemeente</ion-label>
+      <ion-label>*Gemeente</ion-label>
       <ion-input type="text" [(ngModel)]="aquarium.location"></ion-input>
     </ion-item>
   </ion-list>
@@ -163,7 +164,23 @@
             <ion-label>Zand custom factor</ion-label>
             <ion-input type="number" [(ngModel)]="aquarium.de_sandvolumecustomfactor" (change)='updateTotalValue()'></ion-input>
         </ion-item>
+      </ion-list>
 
+
+
+      <ion-list no-lines>
+        <ion-item>
+          <ion-label>Volume correctie?</ion-label>
+          <ion-checkbox checked="false" [(ngModel)]="aquarium.volumecorrection_active" (ionChange)='updateTotalValue()'></ion-checkbox>
+        </ion-item>
+      </ion-list>
+    
+      <ion-list *ngIf="aquarium.volumecorrection_active">
+          <ion-item>
+            <ion-label>Correctie Volume</ion-label>
+            <ion-input type="number" [(ngModel)]="aquarium.volumecorrection" (change)='updateTotalValue()' min="0" max="1000"></ion-input>
+            <p item-right>l</p>
+          </ion-item>
       </ion-list>
 
       <ion-item>
@@ -171,5 +188,6 @@
         <ion-input type="number" [(ngModel)]="watervolume" disabled="true"></ion-input>
       <p item-right>l</p>
     </ion-item>
-    <button (click)='next()' ion-button>Volgende</button>
+    <button  *ngIf="mode == 'ADD'" (click)='next()' ion-button>Volgende</button>
+    <button  *ngIf="mode == 'EDIT'" (click)='save()' ion-button>Opslaan</button>
 </ion-content>

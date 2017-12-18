@@ -8,6 +8,9 @@
   <ion-navbar>
     <ion-title>{{aquarium.name}} ({{aquarium.DSRmethod}})</ion-title>
       <ion-buttons end>
+        <button ion-button icon-only (click)='addMeasurements()'>
+          <ion-icon name="ios-add-circle-outline"></ion-icon>
+        </button>
         <button ion-button icon-only (click)="openMenu()">
           <ion-icon name="more"></ion-icon>
         </button>
@@ -26,10 +29,10 @@
     </ion-list>
 
 
-  <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>Doseringen bekijken {{aquarium.DSRmethod}}</button>
+  <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>Doseringen</button>
 
-    <ion-list *ngFor="let measurement of measurementsreverse">
-      <ion-list-header>Deze week</ion-list-header>
+    <ion-list *ngFor="let measurement of measurements">
+      <ion-list-header>{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Waterwaarden</ion-list-header>
       
       <div *ngFor="let parameter of parameters">
         <ion-item *ngIf="measurement[parameter]">
@@ -39,13 +42,16 @@
             <ion-icon *ngIf="measurement[parameter+'status'] == 'perfect'" name="thumbs-up"></ion-icon>
             <ion-icon *ngIf="measurement[parameter+'status'] == 'ok'" name="thumbs-up"></ion-icon>
           </ion-avatar>
-          <h2>{{parameter}} ({{measurement[parameter]}})</h2>
+          <h2>{{parameter}}
+            <button ion-button clear icon-only (click)="showInfo(parameter, measurement[parameter])">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
           <p>{{ measurement[parameter+'status'] === 'low' ? 'Moet omhoog' : (measurement[parameter+'status'] === 'high' ? 'Moet omlaag': (measurement[parameter+'status'] === 'ok' ? 'Goed': 'Perfect')) }}</p>
-          <ion-note item-end>{{ measurement.readabletom | date:"dd/MM" }}</ion-note>
+          <ion-note item-end>{{measurement[parameter]}}</ion-note>
         </ion-item>
       </div>
 
     </ion-list>
 
-  <button (click)='addMeasurements()' ion-button>Metingen toevoegen</button>
 </ion-content>

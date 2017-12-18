@@ -10,5 +10,9 @@ export class AboutPage {
   constructor(public navCtrl: NavController) {
 
   }
+  
+  openGit() {
+    window.open("https://github.com/DSRReefing/DSRApp", '_system');
+  }
 
 }

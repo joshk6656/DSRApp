@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
+import { Platform, ActionSheetController } from 'ionic-angular';
+
 import { Addaquariumstep1Page } from '../addaquariumstep1/addaquariumstep1'
 import { AquariumdetailsPage } from '../aquariumdetails/aquariumdetails';
 import { SelectmethodPage } from '../selectmethod/selectmethod';
-import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
-import { LoadingController } from 'ionic-angular';
+
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
-import { Platform, ActionSheetController } from 'ionic-angular';
+import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
 import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
 
 @Component({
@@ -15,7 +17,6 @@ import { LoggerServiceProvider } from '../../providers/logger-service/logger-ser
 })
 export class DashboardPage {
   public aquariums = {};
-  //public aquariumkeys = [];
 
   constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public dsrData: DsrDataProvider, public authService: AuthServiceProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
     let me = this;
@@ -23,12 +24,16 @@ export class DashboardPage {
         content: "Loading..."
     });
     this.log.debug('DashboardPage','constructor','Loading Dashboard');
+    this.log.setAquarium({});
     loader.present();
-    this.dsrData.loadAquariums(function (result){
-      if (result) {
-        me.log.debug('DashboardPage','constructor','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
+    this.dsrData.loadAquariums(function (err, result){
+      if (err) {
+        me.log.debug('DashboardPage','constructor',"LoadAquariums failed with error: " + err );
+        me.log.showAlert('Loading failed', err, ['OK']);
+      } else {
         me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
       }
+      me.log.debug('DashboardPage','constructor','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
       loader.dismiss().catch(() => me.log.debug('DashboardPage','constructor','Caught exception on dismiss()')); // https://github.com/ionic-team/ionic/issues/10046
     });
   }
@@ -36,8 +41,11 @@ export class DashboardPage {
   doRefresh(refresher) {
     let me = this;
     this.log.debug('DashboardPage','doRefresh','Begin async operation');
-    this.dsrData.loadAquariums(function (result){
-      if (result) {
+    this.dsrData.loadAquariums(function (err, result){
+      if (err) {
+        me.log.debug('DashboardPage','constructor',"LoadAquariums failed with error: " + err );
+        me.log.showAlert('Loading failed', err, ['OK']);
+      } else {
         me.log.debug('DashboardPage','doRefresh','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
         me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
       }

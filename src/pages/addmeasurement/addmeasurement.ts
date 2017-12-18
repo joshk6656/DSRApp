@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { AlertController } from 'ionic-angular';
-//import { DashboardPage } from '../dashboard/dashboard';
+import { LoadingController } from 'ionic-angular';
+
+import { HelpdetailsPage } from '../helpdetails/helpdetails';
+
 import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
+import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
 
 
 /**
@@ -37,20 +40,18 @@ export class AddmeasurementPage {
     no3: null,
     no2: null,
     iron: null,
-    tom: new Date().toISOString().slice(0,10) // time of measurement
-  }//Math.round(+new Date() / 1000)
+    tom: new Date().toISOString().slice(0,10)
+  }
+  measurementgoals;
 
-  measurementgoals;// = this.dsrData.measurementgoals;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, private dsrData: DsrDataProvider) {
-    console.log("Building addMeasurement page")
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, private log: LoggerServiceProvider) {
     this.aquariumid= navParams.get("aquariumid");
+    this.log.info('AddMeasurementPage','constructor','Preparing Measurement Page for aquariumid: ' + this.aquariumid);
     if (this.aquariumid) {
       this.aquariumname = this.dsrData.aquariums[this.aquariumid].name;
-      //this.method = this.dsrData.aquariums[aquariumid].DSRmethod;
-      this.measurementgoals = this.dsrData.measurementgoals//this.dsrData.aquariums[aquariumid].targetvalues;
+      this.measurementgoals = this.dsrData.measurementgoals;
     } else {
-      console.log("No aquarium provided?")
+      this.log.warning('AddMeasurementPage','constructor','No aquariumid provided?');
     }
     if (this.dsrData.aquariums[this.aquariumid].DSRmethod == 'FULLDSR') {
       this.showalltests = true;
@@ -59,27 +60,56 @@ export class AddmeasurementPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddmeasurementPage');
-    //console.log('Method:' + this.method )
   }
 
   save() {
+    this.log.info('AddMeasurementPage','save','Preparing save for: ' + this.aquariumid);
     let me = this;
-    console.log('Saving measurements for: ' + this.aquariumname);
-    console.log("this.newmeasurement.tom: " + this.newmeasurement.tom)
-    this.newmeasurement.tom = ""+Math.round(+new Date(this.newmeasurement.tom) / 1000)
-    this.dsrData.addMeasurement(this.aquariumid, this.newmeasurement, function (result) {
+    this.newmeasurement.tom = ""+Math.round(+new Date(this.newmeasurement.tom) / 1000);
+
+    this.dsrData.addMeasurement(this.aquariumid, this.newmeasurement, this.newmeasurement.tom, function (result) {
+      if (!me.checkForAtLeastOneMeasurement()) {
+        me.log.debug('AddMeasurementPage','save','Should provide at least one measurement value');
+        me.log.showAlert('Meetwaarden?', "Geef ten minste 1 meetwaarden op.", ['OK']);
+        return;
+      }
       if (result) {
-        let alert = me.alertCtrl.create({
-          title: 'Opgeslagen',
-          subTitle: 'Meetwaarden zijn opgeslagen en daardoor heeft u steeds een geschiedenis van deze waarden beschikbaar.',
-          buttons: ['OK']
+        // Should reload aquariums after addMeasurement
+        let loader = me.loadingCtrl.create({
+            content: "Loading..."
         });
-        alert.present();
-        me.navCtrl.popToRoot()
+        me.log.debug('AddMeasurementPage','save','Loading Aquariums after addMeasurement');
+        loader.present();
+        me.dsrData.loadAquariums(function (err, result){
+          loader.dismiss().catch(() => me.log.debug('AddMeasurementPage','save','Caught exception on dismiss()')); // https://github.com/ionic-team/ionic/issues/10046
+          if (err) {
+            me.log.debug('AddMeasurementPage','save',"LoadAquariums failed with error: " + err );
+            me.log.showAlert('Loading failed', err, ['OK']);
+          } else {
+            me.log.debug('AddMeasurementPage','save','Aquariums loaded: ' + JSON.stringify(me.dsrData.aquariums));
+            me.dsrData.aquariumkeys = Object.keys(me.dsrData.aquariums);
+            me.log.showAlert('Opgeslagen', 'Meetwaarden zijn opgeslagen en daardoor heeft u steeds een geschiedenis van deze waarden beschikbaar.', ['OK']);
+          }
+          me.navCtrl.popToRoot();
+        });
       } else {
-        console.log("Something bad happened");
+        this.log.warning('AddMeasurementPage','save','addMeasurement returned unexpected result: ' + result);
       }
     })
+  }
+
+  checkForAtLeastOneMeasurement() {
+    for (let item in this.newmeasurement) {
+      if (item === "tom") continue;
+      if (this.newmeasurement[item]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  showInfo(parameter, measurement) {
+    this.navCtrl.push(HelpdetailsPage, {"question": "Wat is "+parameter+"?"});
   }
 
 }
