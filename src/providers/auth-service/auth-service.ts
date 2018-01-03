@@ -47,23 +47,23 @@ export class AuthServiceProvider {
   }
 
   googleLogin(cb) {
+    let me = this;
     if (this.platform.is('cordova')) {
-      let me = this
       this.googlePlus.login({'webClientId': '820818360210-bmp20pkjamrnehco7h3lv3osk0ql6mkg.apps.googleusercontent.com'}).then(userData => {
          var token = userData.idToken;
          const googleCredential = firebase.auth.GoogleAuthProvider.credential(token, null);
          firebase.auth().signInWithCredential(googleCredential).then((success) => {
-           console.log("Firebase success: " + JSON.stringify(success));
-          cb(true);
+            console.log("Firebase success: " + JSON.stringify(success));
+            cb(true);
          })
          .catch((error) => {
-           console.log("Firebase failure: " + JSON.stringify(error));
-               me.displayAlert(error,"signInWithCredential failed")
-               cb(false);
+            console.log("Firebase failure: " + JSON.stringify(error));
+            me.displayAlert(error,"signInWithCredential failed")
+            cb(false);
          });
        }).catch((gplusErr) => {
           console.log("GooglePlus failure: " + JSON.stringify(gplusErr));
-          this.displayAlert(JSON.stringify(gplusErr),"GooglePlus failed")
+          me.displayAlert(JSON.stringify(gplusErr),"GooglePlus failed")
           cb(false);
        });
      } else {
@@ -71,6 +71,7 @@ export class AuthServiceProvider {
         console.log("Google login worked, using this to login on the server: " + JSON.stringify(user));
         cb(true);
       }).catch(err => {
+        me.displayAlert(err,"GooglePlus login failed");
         console.log(err);
         cb(false);
       });
@@ -78,6 +79,7 @@ export class AuthServiceProvider {
   }
 
   fblogin(cb) {
+    let me = this;
     if (this.platform.is('cordova')) {
       this.fb.login(['email', 'public_profile']).then(res => {
         const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
@@ -86,7 +88,8 @@ export class AuthServiceProvider {
           cb(true);
         }
       }) .catch(err => {
-        console.log(err);
+        console.log("Facebook login failed: " + JSON.stringify(err));
+        me.displayAlert(err,"Facebook login failed");
         cb(false);
       })
     }
@@ -95,7 +98,9 @@ export class AuthServiceProvider {
         console.log("Facebook login worked, using this to login on the server: " + user.user.uid);
         cb(true);
       }).catch(err => {
-        console.log(err);
+        console.log("Facebook login failed: " + JSON.stringify(err));
+        me.displayAlert(err,"Facebook login failed");
+        //console.log(err);
         cb(false);
       });
     }

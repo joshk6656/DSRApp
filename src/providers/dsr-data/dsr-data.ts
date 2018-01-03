@@ -272,21 +272,6 @@ export class DsrDataProvider {
     //console.log('Hello DsrDataProvider Provider');
   }
 
-  displayAlert(value,title)
-  {
-      let coolAlert = this.alertController.create({
-      title: title,
-      message: JSON.stringify(value),
-      buttons: [
-                    {
-                        text: "OK"
-                    }
-               ]
-      });
-      coolAlert.present();
- 
-  }
-
   loadAquariums(cb) {
     let me = this;
 
@@ -310,7 +295,7 @@ export class DsrDataProvider {
       }
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
-      me.displayAlert(err, "loadAquariums  failed")
+      me.log.showAlert("loadAquariums  failed", err);
       cb(err, false)
     });
   }
@@ -347,6 +332,21 @@ export class DsrDataProvider {
     return this.sortMeasurementsByKey(measurements, "key", reverse) 
     //return measurements;
   }
+  getEvents(aquariumid, reverse=true) {
+    let events = []
+    if (!this.aquariums[aquariumid].hasOwnProperty("events")) return events;
+    for (let item in this.aquariums[aquariumid]["events"]) {
+      //me.dsrData.aquariums[me.aquariumid]["measurements"][item]["key"] = item
+      let toe = item;
+      let arr = this.aquariums[aquariumid]["events"][item];
+      if (!arr.hasOwnProperty("key")) {
+        arr["key"] = toe;
+      }
+      events.push(arr)
+    }
+    return this.sortMeasurementsByKey(events, "key", reverse) 
+    //return measurements;
+  }
 
   checkOnTarget(key, value) {
     if (this.measurementgoals[key] == value) {
@@ -365,6 +365,7 @@ export class DsrDataProvider {
     let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
     let options = new RequestOptions({ headers: headers });
     let params = aqua;
+    let me = this;
     let urlSearchParams = new URLSearchParams();		
     for(let key in params){
       urlSearchParams.append(key, params[key]);
@@ -377,10 +378,16 @@ export class DsrDataProvider {
       let aquaid = data.message.aquariumid
       this.aquariums[aquaid] = aqua;
       this.aquariumkeys = Object.keys(this.aquariums)
-      cb(aquaid)
+      if (data.hasOwnProperty("returncode") && data.returncode === 200) {
+        cb(aquaid);
+      } else {
+        console.log("REQ failed with err: " + data.hasOwnProperty("error") ? data.error : "Unknown error");
+        me.log.showAlert(data.hasOwnProperty("error") ? data.error : "Unknown error", "Try again later");
+        cb(false);
+      }
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
-      this.displayAlert(err, "addAquarium  failed")
+      me.log.showAlert("Add aquarium failed", err);
       cb(false)
     });
   }
@@ -389,6 +396,7 @@ export class DsrDataProvider {
     let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
     let options = new RequestOptions({ headers: headers });
     let params = aqua;
+    let me = this;
     let urlSearchParams = new URLSearchParams();
     //urlSearchParams.append("aquariumid", aquariumid);
     for(let key in params){
@@ -408,7 +416,7 @@ export class DsrDataProvider {
       cb(aquaid)
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
-      this.displayAlert(err, "addAquarium  failed")
+      me.log.showAlert("update Aquarium failed", err);
       cb(false)
     });
   }
@@ -440,7 +448,7 @@ export class DsrDataProvider {
       cb(true)
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
-      this.displayAlert(err, "addAquarium  failed")
+      me.log.showAlert("setDSRMethod failed", err);
       cb(false)
     });
   }
@@ -461,14 +469,21 @@ export class DsrDataProvider {
     let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/aquarium/delete', body, options);
     jsonresponse.map(res => res.json()).subscribe(data => {
       console.log('Aquarium delete returned following data: ', JSON.stringify(data));
+      if (data.hasOwnProperty("returncode") && data.returncode === 200) {
+        cb(true);
+        delete me.aquariums[aquariumid]
+        this.aquariumkeys = Object.keys(this.aquariums)
+      } else {
+        console.log("REQ failed with err: " + data.hasOwnProperty("error") ? data.error : "Unknown error");
+        me.log.showAlert(data.hasOwnProperty("error") ? data.error : "Unknown error", "Try again later");
+        cb(false);
+      }
       //let occupation = me.aquariums[aquariumid].occupation
-      console.log(me.aquariums)
-      delete me.aquariums[aquariumid]
-      this.aquariumkeys = Object.keys(this.aquariums)
-      cb(true)
+      //console.log(me.aquariums)
+      //cb(true)
     }, err => {
       console.log("HTTP REQ failed with err: " + err);
-      this.displayAlert(err, "deleteAquarium  failed")
+      me.log.showAlert("delete Aquarium failed", err);
       cb(false)
     });
   }
@@ -510,11 +525,65 @@ export class DsrDataProvider {
       let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/measurement/add', body, options);
       jsonresponse.map(res => res.json()).subscribe(data => {
         console.log('Measurement add returned following data: ', JSON.stringify(data));
-        cb(true);
+        if (data.hasOwnProperty("returncode") && data.returncode === 200) {
+          cb(true);
+        } else {
+          console.log("REQ failed with err: " + data.hasOwnProperty("error") ? data.error : "Unknown error");
+          me.log.showAlert(data.hasOwnProperty("error") ? data.error : "Unknown error", "Parameter has incorrect format");
+          cb(false);
+        }
       }, err => {
         console.log("HTTP REQ failed with err: " + err);
-        this.displayAlert(err, "addAquarium  failed")
-        cb(false)
+        me.log.showAlert("add Measurement failed", err);
+        cb(false);
+      });
+    } else {
+      console.log("aquariumid: " + aquariumid + " not found");
+      cb(false);
+    }
+  }
+
+  addEvent(aquariumid, event, cb) {
+    console.log("addEvent triggered for: " + aquariumid)
+    console.log(this.aquariums)
+    let aqua = this.aquariums[aquariumid]
+    let me = this;
+    /*let toe = event.toe;
+    delete event.toe;*/
+    if (aqua) {
+      /*let newmeasurementfiltered = {};
+      for (let m in newmeasurement) {
+        if (newmeasurement[m]) {
+          newmeasurementfiltered[m] = newmeasurement[m]
+        }
+      }*/
+      //aqua.measurements.unshift(newmeasurementfiltered);
+
+      let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded', "Authorization": "Bearer " + this.authService.user_uid, "x-appversion": this.log.version});
+      let options = new RequestOptions({ headers: headers });
+      let params = event;
+      let urlSearchParams = new URLSearchParams();
+      urlSearchParams.append("aquariumid", aquariumid);	
+      //urlSearchParams.append("tom", tom);	
+      for(let keys in params){
+        urlSearchParams.append(keys, params[keys]);
+      }
+      let body = urlSearchParams.toString();
+      console.log("Body: " + body)
+      let jsonresponse = me.http.post('https://us-central1-dsrreefingapp.cloudfunctions.net/v1/event/add', body, options);
+      jsonresponse.map(res => res.json()).subscribe(data => {
+        console.log('Measurement add returned following data: ', JSON.stringify(data));
+        if (data.hasOwnProperty("returncode") && data.returncode === 200) {
+          cb(true);
+        } else {
+          console.log("REQ failed with err: " + data.hasOwnProperty("error") ? data.error : "Unknown error");
+          me.log.showAlert(data.hasOwnProperty("error") ? data.error : "Unknown error", "Parameter has incorrect format");
+          cb(false);
+        }
+      }, err => {
+        console.log("HTTP REQ failed with err: " + err);
+        me.log.showAlert("add Event failed", err);
+        cb(false);
       });
     } else {
       console.log("aquariumid: " + aquariumid + " not found");

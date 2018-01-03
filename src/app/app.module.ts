@@ -15,6 +15,7 @@ import { AddmeasurementPage } from '../pages/addmeasurement/addmeasurement';
 import { SelectmethodPage } from '../pages/selectmethod/selectmethod';
 import { AquariumdetailsPage } from '../pages/aquariumdetails/aquariumdetails';
 import { AquariumdosingPage } from '../pages/aquariumdosing/aquariumdosing';
+import { AddEventPage } from '../pages/addevent/addevent';
 
 import { HelpdetailsPage } from '../pages/helpdetails/helpdetails';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -59,7 +60,8 @@ firebase.initializeApp(firebaseconfig);
     AquariumdetailsPage,
     HelpdetailsPage,
     AquariumdosingPage,
-    Addaquariumstep1Page
+    Addaquariumstep1Page,
+    AddEventPage
   ],
   imports: [
     BrowserModule,
@@ -84,7 +86,8 @@ firebase.initializeApp(firebaseconfig);
     AquariumdetailsPage,
     HelpdetailsPage,
     AquariumdosingPage,
-    Addaquariumstep1Page
+    Addaquariumstep1Page,
+    AddEventPage
   ],
   providers: [
     StatusBar,

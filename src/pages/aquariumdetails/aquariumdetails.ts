@@ -8,6 +8,7 @@ import { AquariumdosingPage } from '../aquariumdosing/aquariumdosing';
 import { SelectmethodPage } from '../selectmethod/selectmethod';
 import { Addaquariumstep1Page } from '../addaquariumstep1/addaquariumstep1';
 import { HelpdetailsPage } from '../helpdetails/helpdetails';
+import { AddEventPage } from '../addevent/addevent';
 
 import { DsrDataProvider } from '../../providers/dsr-data/dsr-data';
 import { LoggerServiceProvider } from '../../providers/logger-service/logger-service';
@@ -30,6 +31,7 @@ export class AquariumdetailsPage {
   parameters = [];
   public measurements = [];
   public aquariumid;
+  public timelineevents = [];
 
   constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
     let me = this;
@@ -37,10 +39,20 @@ export class AquariumdetailsPage {
     this.log.debug('AquariumdetailsPage','constructor','Loading aquariumid: ' + this.aquariumid);
     this.aquarium = this.dsrData.aquariums[this.aquariumid];
     this.log.setAquarium(this.aquarium);
-    me.measurements = me.dsrData.getMeasurements(me.aquariumid);
     this.log.debug('AquariumdetailsPage','constructor','Aquarium: ' + this.aquarium);
     me.parameters = Object.keys(me.dsrData.measurementgoals);
+    me.generateTimeline(me.aquariumid);
     me.printMeasurements();
+    me.printEvents();
+  }
+
+  generateTimeline(aquariumid) {
+    let me = this;
+    me.measurements = me.dsrData.getMeasurements(aquariumid);
+    let events = me.dsrData.getEvents(aquariumid);
+    me.timelineevents = me.measurements.concat(events);
+    console.log(me.timelineevents);
+    this.dsrData.sortMeasurementsByKey(me.timelineevents, "key", true); 
   }
 
   openMenu() {
@@ -92,11 +104,19 @@ export class AquariumdetailsPage {
     let me = this;
     this.dsrData.deleteAquarium(this.aquariumid, function (result){
       if (result) {
-        this.log.debug('AquariumdetailsPage','deleteAquarium','Removed aquarium: ' + me.aquariumid);
+        me.log.debug('AquariumdetailsPage','deleteAquarium','Removed aquarium: ' + me.aquariumid);
       } else {
-        this.log.warning('AquariumdetailsPage','deleteAquarium','Could not remove aquarium: ' + me.aquariumid);
+        me.log.warning('AquariumdetailsPage','deleteAquarium','Could not remove aquarium: ' + me.aquariumid);
       }
     });
+  }
+
+  printEvents() {
+    let me = this;
+      for (let event in me.aquarium.events) {
+        me.aquarium.events[event].readabletom = new Date(Number(me.aquarium.events[event]["key"]) * 1000).toISOString().slice(0,10)
+        console.log(me.aquarium.events[event].readabletom);
+      }
   }
 
   printMeasurements() {
@@ -106,6 +126,9 @@ export class AquariumdetailsPage {
     } else {
       for (let measurement in me.aquarium.measurements) {
         let targets = me.dsrData.measurementgoals
+        if (!me.aquarium.measurements[measurement].hasOwnProperty("key") || me.aquarium.measurements[measurement]["key"] === "NaN") {
+          me.log.error('AquariumdetailsPage','printMeasurements','Key missing for: ' + JSON.stringify(me.aquarium.measurements[measurement]));
+        }
         me.aquarium.measurements[measurement].readabletom = new Date(Number(me.aquarium.measurements[measurement]["key"]) * 1000).toISOString().slice(0,10)
         console.log(me.aquarium.measurements[measurement].readabletom);
         for (let value in me.aquarium.measurements[measurement]) {
@@ -156,9 +179,41 @@ export class AquariumdetailsPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad AquariumdetailsPage');
   }
-  addMeasurements() {
-    console.log('addMeasurements triggered for: ' + this.aquarium.name)
-    this.navCtrl.push(AddmeasurementPage, {"aquariumid": this.aquariumid});
+  addInfo() {
+    /*console.log('addMeasurements triggered for: ' + this.aquarium.name)
+    this.navCtrl.push(AddmeasurementPage, {"aquariumid": this.aquariumid});*/
+    let me = this;
+    let addInfoActions = this.actionsheetCtrl.create({
+      title: 'Toevoegen',
+      cssClass: 'action-sheets-basic-page',
+      buttons: [
+        {
+          text: 'Gebeurtenis toevoegen',
+          icon: !this.platform.is('ios') ? 'heart-outline' : null,
+          handler: () => {
+            console.log('Add Aquarium Event for: ' + this.aquarium.name);
+            me.navCtrl.push(AddEventPage, {"aquariumid": this.aquariumid});
+          }
+        },
+        {
+          text: 'Metingen toevoegen',
+          icon: !this.platform.is('ios') ? 'heart-outline' : null,
+          handler: () => {
+            console.log('Add Aquarium Measurements for: ' + this.aquarium.name);
+            me.navCtrl.push(AddmeasurementPage, {"aquariumid": this.aquariumid});
+          }
+        },
+        {
+          text: 'Sluiten',
+          role: 'cancel', // will always sort to be on the bottom
+          icon: !this.platform.is('ios') ? 'close' : null,
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    addInfoActions.present();
   }
   checkDosings() {
     this.navCtrl.push(AquariumdosingPage, {"aquariumid": this.aquariumid});

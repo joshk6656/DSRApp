@@ -8,7 +8,7 @@
   <ion-navbar>
     <ion-title>{{aquarium.name}} ({{aquarium.DSRmethod}})</ion-title>
       <ion-buttons end>
-        <button ion-button icon-only (click)='addMeasurements()'>
+        <button ion-button icon-only (click)='addInfo()'>
           <ion-icon name="ios-add-circle-outline"></ion-icon>
         </button>
         <button ion-button icon-only (click)="openMenu()">
@@ -31,8 +31,9 @@
 
   <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>Doseringen</button>
 
-    <ion-list *ngFor="let measurement of measurements">
-      <ion-list-header>{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Waterwaarden</ion-list-header>
+    <ion-list *ngFor="let measurement of timelineevents">
+      <ion-list-header *ngIf="!measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Waterwaarden</ion-list-header>
+      <ion-list-header *ngIf="measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Gebeurtenis</ion-list-header>
       
       <div *ngFor="let parameter of parameters">
         <ion-item *ngIf="measurement[parameter]">
@@ -51,6 +52,9 @@
           <ion-note item-end>{{measurement[parameter]}}</ion-note>
         </ion-item>
       </div>
+      <ion-item *ngIf="measurement['description']">
+        <p>{{measurement['description']}}</p>
+      </ion-item>
 
     </ion-list>
 
