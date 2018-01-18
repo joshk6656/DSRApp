@@ -25,15 +25,15 @@
   </ion-refresher>
 
     <ion-list *ngIf="nomeasurements">
-      Geen metingen gevonden.
+        {{ 'No Measurements Found' | translate }}
     </ion-list>
 
 
-  <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>Doseringen</button>
+  <button *ngIf="!nomeasurements" (click)='checkDosings()' ion-button>{{ 'Dosings' | translate }}</button>
 
     <ion-list *ngFor="let measurement of timelineevents">
-      <ion-list-header *ngIf="!measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Waterwaarden</ion-list-header>
-      <ion-list-header *ngIf="measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - Gebeurtenis</ion-list-header>
+      <ion-list-header *ngIf="!measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - {{ 'Water Measurements' | translate }}</ion-list-header>
+      <ion-list-header *ngIf="measurement['description']">{{ measurement.readabletom | date:"dd/MM/yyyy" }} - {{ 'Events' | translate }}</ion-list-header>
       
       <div *ngFor="let parameter of parameters">
         <ion-item *ngIf="measurement[parameter]">

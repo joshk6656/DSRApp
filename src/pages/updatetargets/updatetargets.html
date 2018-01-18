@@ -1,0 +1,174 @@
+<!--
+  Generated template for the UpdatetargetsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  
+    <ion-navbar>
+      <ion-title>{{ 'Update Targets' | translate }}</ion-title>
+    </ion-navbar>
+  
+  </ion-header>
+  
+  
+  <ion-content padding>
+        <ion-list>
+          <h2>KH
+            <button ion-button clear icon-only (click)="showInfo('KH', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.kh"></ion-input>
+            <p item-right>°dH</p>
+          </ion-item>
+        </ion-list>
+        <ion-list>
+          <h2>Ca
+            <button ion-button clear icon-only (click)="showInfo('Ca', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.ca"></ion-input>
+            <p item-right>ppm</p>
+          </ion-item>
+        </ion-list>
+        <ion-list>
+          <h2>NO3 Nitraat
+            <button ion-button clear icon-only (click)="showInfo('NO3', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.no3"></ion-input>
+            <p item-right>mg/l</p>
+          </ion-item>
+        </ion-list>
+        <ion-list>
+          <h2>PO4 Fosfaat
+            <button ion-button clear icon-only (click)="showInfo('PO4', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.po4"></ion-input>
+            <p item-right>mg/l</p>
+          </ion-item>
+        </ion-list>
+        
+        <ion-list no-lines>
+          <ion-item>
+            <ion-label>PH, Zoutgehalte en Nitriet?</ion-label>
+            <ion-checkbox checked="false" [(ngModel)]="showphandsalinity"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+  
+        <ion-list *ngIf="showphandsalinity">
+          <h2>PH
+            <button ion-button clear icon-only (click)="showInfo('ph', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.ph"></ion-input>
+          </ion-item>
+          <h2>Saliniteit
+            <button ion-button clear icon-only (click)="showInfo('salinity', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.salinity"></ion-input>
+          </ion-item>
+          <h2>NO2 (Nitriet, niet Nitraat)
+            <button ion-button clear icon-only (click)="showInfo('NO2', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.no2"></ion-input>
+          </ion-item>
+        </ion-list>
+        
+        <ion-list no-lines>
+          <ion-item>
+            <ion-label>Show all tests?</ion-label>
+            <ion-checkbox checked="false" [(ngModel)]="showalltests"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+  
+        <ion-list *ngIf="showalltests">
+          <h2>Mg
+            <button ion-button clear icon-only (click)="showInfo('Mg', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.mg"></ion-input>
+            <p item-right>ppm</p>
+          </ion-item>
+          <h2>Kalium
+            <button ion-button clear icon-only (click)="showInfo('Kalium', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.kalium"></ion-input>
+            <p item-right>mg/l</p>
+          </ion-item>
+          <h2>Strontium
+            <button ion-button clear icon-only (click)="showInfo('Strontium', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.strontium"></ion-input>
+            <p item-right>mg/l</p>
+          </ion-item>
+          <h2>Boor
+            <button ion-button clear icon-only (click)="showInfo('Boor', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.boor"></ion-input>
+            <p item-right>ppm</p>
+          </ion-item>
+          <h2>Jodide 1:10
+            <button ion-button clear icon-only (click)="showInfo('Jodide', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.jodide"></ion-input>
+            <p item-right>ppm</p>
+          </ion-item>
+          <h2>Ijzer
+            <button ion-button clear icon-only (click)="showInfo('Fe', null)">
+              <ion-icon name="ios-help-circle-outline"></ion-icon>
+            </button>
+          </h2>
+          <ion-item>
+            <ion-label>{{ 'Target Value' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="measurementgoals.iron"></ion-input>
+          </ion-item>
+  
+        </ion-list>
+        <button (click)='save()' ion-button>{{ 'SaveButton' | translate }}</button>
+        
+  </ion-content>  

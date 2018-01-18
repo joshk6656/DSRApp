@@ -11,7 +11,7 @@
     </ion-row>
     <ion-row justify-content-center align-items-center style="height: 40%">
         <section *ngIf="isLoggedIn">
-          Welcome {{user.displayName}}
+            {{ 'Welcome' | translate }} {{user.displayName}}
           <button ion-button full (click)="logout()" >Logout</button>
         </section>
       

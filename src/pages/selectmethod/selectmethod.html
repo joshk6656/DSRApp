@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Methode</ion-title>
+    <ion-title>{{ 'DSR Method' | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,7 +15,7 @@
 
 <ion-content padding>
     <p>
-      Kies methode
+      {{ 'Choose method' | translate }}
     </p>
     <button (click)='selectMethod("FULLDSR")' ion-button>(*) Full DSR</button>
     <button (click)='selectMethod("EZ")' ion-button>EZ Line</button>

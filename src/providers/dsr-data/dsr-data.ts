@@ -20,7 +20,7 @@ export class DsrDataProvider {
   public aquariumkeys = []
   public triggerLoadAquariums = true;
 
-  public measurementgoals = {
+  public defaulttargets = {
     ph: 8.1,
     salinity: 33,
     kh: 9,
@@ -35,6 +35,7 @@ export class DsrDataProvider {
     no2: 0,
     iron: 0.15
   }
+  public measurementgoals = this.defaulttargets;
 
   public measurementranges = {
     ph: [7.95, 8.2],
@@ -145,7 +146,7 @@ export class DsrDataProvider {
         "reverseddosing": true
       },*/
       "po4": {
-        "correctionfactor": 10/100,
+        "correctionfactor": 0.10/100,
         "correctiontype": "ml",
         "maxcorrectionperday": 0.04
       },
@@ -170,7 +171,7 @@ export class DsrDataProvider {
         "maxcorrectionperday": 2
       },
       "jodide": {
-        "correctionfactor": 26/100,
+        "correctionfactor": 0.26/100,
         "correctiontype": "ml",
         "maxcorrectionperday": 0.03
       },
@@ -222,10 +223,10 @@ export class DsrDataProvider {
       "kh": {"productname": "KH+", "dosing": 0.00, "unit": "g"},
       "ca": {"productname": "Ca+", "dosing": 0.00, "unit": "g"},
       "mg": {"productname": "Mg+", "dosing": 0.00, "unit": "g"},
-      "kalium": {"productname": "K+", "dosing": 0.00, "unit": "g"},
-      "strontium": {"productname": "Sr+", "dosing": 0.00, "unit": "g"},
-      "boor": {"productname": "B+", "dosing": 0.00, "unit": "g"},
-      "jodide": {"productname": "I+", "dosing": 0.00, "unit": "g"},
+      "kalium": {"productname": "K+", "dosing": 0.00, "unit": "ml"},
+      "strontium": {"productname": "Sr+", "dosing": 0.00, "unit": "ml"},
+      "boor": {"productname": "B+", "dosing": 0.00, "unit": "ml"},
+      "jodide": {"productname": "I+", "dosing": 0.00, "unit": "ml"},
       "mangaan": {"productname": "Mn+", "dosing": 0.00, "unit": "g"},
       "no3": {"productname": "CarbonVS", "dosing": 1.00, "unit": "g"},
       //"po4": {"productname": "Fe+", "dosing": 0.00, "unit": "g"},
@@ -347,6 +348,13 @@ export class DsrDataProvider {
     return this.sortMeasurementsByKey(events, "key", reverse) 
     //return measurements;
   }
+
+  /*getMeasurementGoals(aquariumkey) {
+    if (this.aquariums[aquariumkey].hasOwnProperty("measurementgoals") && this.aquariums[aquariumkey]["measurementgoals"]) {
+      return this.aquariums[aquariumkey]["measurementgoals"]
+    }
+    return this.defaulttargets;
+  }*/
 
   checkOnTarget(key, value) {
     if (this.measurementgoals[key] == value) {
@@ -614,8 +622,8 @@ export class DsrDataProvider {
   loadFAQItems(cb) {
     let me = this;
     this.http.get('assets/data/FAQ.json').map(res => res.json()).subscribe(function (data) {
-      me.faqsearcheditems = data
-      me.faqitems = data
+      me.faqsearcheditems = data.en
+      me.faqitems = data.en
       cb(true);
     }, function(e){
       console.log("e");

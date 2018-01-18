@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Eerste meting toevoegen</ion-title>
+    <ion-title>{{ 'Add Measurement' | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -16,7 +16,7 @@
 <ion-content padding>
     <ion-list>
         <ion-item>
-          <ion-label>Date</ion-label>
+          <ion-label>{{ 'Date' | translate }}</ion-label>
           <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="newmeasurement.tom"></ion-datetime>
         </ion-item>
       </ion-list>
@@ -27,13 +27,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.kh"></ion-input>
           <p item-right>°dH</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.kh"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.kh" disabled="true"></ion-input>
           <p item-right>°dH</p>
         </ion-item>
       </ion-list>
@@ -43,13 +43,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.ca"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.ca"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.ca" disabled="true"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
       </ion-list>
@@ -59,13 +59,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.no3"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.no3"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.no3" disabled="true"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
       </ion-list>
@@ -75,13 +75,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.po4"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.po4"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.po4" disabled="true"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
       </ion-list>
@@ -99,36 +99,36 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.ph"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.ph"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.ph" disabled="true"></ion-input>
         </ion-item>
         <h2>Saliniteit
           <button ion-button clear icon-only (click)="showInfo('salinity', null)">
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.salinity"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.salinity"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.salinity" disabled="true"></ion-input>
         </ion-item>
         <h2>NO2 (Nitriet, niet Nitraat)
           <button ion-button clear icon-only (click)="showInfo('NO2', null)">
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.no2"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.no2"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.no2" disabled="true"></ion-input>
         </ion-item>
       </ion-list>
       
@@ -145,13 +145,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.mg"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.mg"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.mg" disabled="true"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
         <h2>Kalium
@@ -159,13 +159,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.kalium"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.kalium"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.kalium" disabled="true"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <h2>Strontium
@@ -173,13 +173,13 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.strontium"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.strontium"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.strontium" disabled="true"></ion-input>
           <p item-right>mg/l</p>
         </ion-item>
         <h2>Boor
@@ -187,12 +187,12 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.boor"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.boor"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.boor" disabled="true"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
         <h2>Jodide 1:10
@@ -200,12 +200,12 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.jodide"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.jodide"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.jodide" disabled="true"></ion-input>
           <p item-right>ppm</p>
         </ion-item>
         <h2>Ijzer
@@ -213,15 +213,15 @@
             <ion-icon name="ios-help-circle-outline"></ion-icon>
           </button></h2>
         <ion-item>
-          <ion-label>Gemeten waarde</ion-label>
+          <ion-label>{{ 'Measurement Value' | translate }}</ion-label>
           <ion-input type="number" [(ngModel)]="newmeasurement.iron"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Doel waarde</ion-label>
-          <ion-input type="number" [(ngModel)]="measurementgoals.iron"></ion-input>
+          <ion-label>{{ 'Target Value' | translate }}</ion-label>
+          <ion-input type="number" [(ngModel)]="measurementgoals.iron" disabled="true"></ion-input>
         </ion-item>
 
       </ion-list>
-      <button (click)='save()' ion-button>Opslaan</button>
+      <button (click)='save()' ion-button>{{ 'SaveButton' | translate }}</button>
       
 </ion-content>

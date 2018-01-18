@@ -16,6 +16,9 @@ import { AngularFireAuth } from "angularfire2/auth";
 //import * as firebase from 'firebase';
 import { App } from 'ionic-angular';
 
+import { Globalization } from '@ionic-native/globalization';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @Component({
   templateUrl: 'app.html',
@@ -24,13 +27,23 @@ import { App } from 'ionic-angular';
 export class MyApp {
   rootPage:any = HomePage;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private afAuth: AngularFireAuth, private app:App, public authService: AuthServiceProvider, private log: LoggerServiceProvider) {//, public navCtrl: NavController) {
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private afAuth: AngularFireAuth, private app:App, public authService: AuthServiceProvider, private log: LoggerServiceProvider, private translateService: TranslateService, private globalization: Globalization) {//, public navCtrl: NavController) {
     let me = this;
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
 
+      this.globalization.getPreferredLanguage()
+      .then(res => me.log.info('AppComponents','constructor',"getPreferredLanguage returned: " + JSON.stringify(res)))
+      .catch(function (e) {
+        if (e != "cordova_not_available") {
+          me.log.error('AppComponents','constructor',"ERROR CATCHED: getPreferredLanguage returned: " + JSON.stringify(e));
+        }
+      });
+
+      me.translateService.setDefaultLang('en');
+      me.translateService.use('nl');
 
       this.afAuth.authState.subscribe(user => {
         if (!user) {

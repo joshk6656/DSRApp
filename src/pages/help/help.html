@@ -1,24 +1,24 @@
 <ion-header>
     <ion-navbar>
       <ion-title>
-        Help
+          {{ 'Help' | translate }}
       </ion-title>
     </ion-navbar>
   </ion-header>
   
   <ion-content>
     <ion-list>
-      <ion-list-header>Find us on Facebook</ion-list-header>
+      <ion-list-header>{{ 'Find us on facebook' | translate }}</ion-list-header>
       <ion-item>
         <!--<a href="fb://www.facebook.com/groups/DSRProductSupport">-->
         <a (click)="openFB()">
           <ion-icon name="logo-facebook" item-start></ion-icon>
-          DSR Support op Facebook
+          {{ 'DSR Support on Facebook' | translate }}
         </a>
       </ion-item>
     </ion-list>
   
-    <ion-list-header>FAQ Search</ion-list-header>
+    <ion-list-header>{{ 'FAQ Search' | translate }}</ion-list-header>
     <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
     <ion-list>
       <ion-item *ngFor="let item of faqitems; let i = index" (click)="helpDetails(faqitems[i])">

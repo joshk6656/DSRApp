@@ -23,7 +23,8 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DsrDataProvider } from '../providers/dsr-data/dsr-data';
-import { HttpClientModule } from '@angular/common/http';
+//import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule, HttpClient} from '@angular/common/http';
 
 import { HttpModule } from '@angular/http';
 
@@ -36,6 +37,16 @@ import { AuthServiceProvider } from '../providers/auth-service/auth-service';
 import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
 import { LoggerServiceProvider } from '../providers/logger-service/logger-service';
+
+//import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+import { Globalization } from '@ionic-native/globalization';
+
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 let firebaseconfig = {
   apiKey: "AIzaSyCpvbpx6StGtfQb1kLc7M9POfUBBknjEAo",
@@ -71,7 +82,14 @@ firebase.initializeApp(firebaseconfig);
     HttpModule,
     AngularFireModule.initializeApp(firebaseconfig),
     AngularFireDatabaseModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    TranslateModule.forRoot({
+        loader: {
+            provide: TranslateLoader,
+            useFactory: (createTranslateLoader),
+            deps: [HttpClient]
+        }
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -99,7 +117,8 @@ firebase.initializeApp(firebaseconfig);
     AuthServiceProvider,
     Facebook,
     GooglePlus,
-    LoggerServiceProvider
+    LoggerServiceProvider,
+    Globalization
   ]
 })
 export class AppModule {}

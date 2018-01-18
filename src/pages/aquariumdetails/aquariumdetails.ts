@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { Platform, ActionSheetController } from 'ionic-angular';
 
@@ -26,14 +26,14 @@ import { LoggerServiceProvider } from '../../providers/logger-service/logger-ser
   templateUrl: 'aquariumdetails.html',
 })
 export class AquariumdetailsPage {
-  public aquarium = {"measurements": [], "targetvalues": [], "name": "", "DSRmethod": "UNKNOWN"};
+  public aquarium = {"measurements": [], "targetvalues": [], "name": "", "DSRmethod": "UNKNOWN", "events": []};
   nomeasurements = false;
   parameters = [];
   public measurements = [];
   public aquariumid;
   public timelineevents = [];
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public navParams: NavParams, private dsrData: DsrDataProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider, private alertCtrl: AlertController) {
     let me = this;
     this.aquariumid = navParams.get("aquariumid");
     this.log.debug('AquariumdetailsPage','constructor','Loading aquariumid: ' + this.aquariumid);
@@ -83,8 +83,28 @@ export class AquariumdetailsPage {
           icon: !this.platform.is('ios') ? 'heart-outline' : null,
           handler: () => {
             console.log("Delete Aquarium triggered");
-            me.deleteAquarium();
-            me.navCtrl.popToRoot()
+            let alert = this.alertCtrl.create({
+              title: 'Confirm Removal',
+              message: 'Are you sure you want to delete the aquarium and all its information (inreversable)?',
+              buttons: [
+                {
+                  text: 'Cancel',
+                  role: 'cancel',
+                  handler: () => {
+                    console.log('Cancel clicked on confirm removal');
+                  }
+                },
+                {
+                  text: 'Yes',
+                  handler: () => {
+                    console.log('Confirm Removal clicked');
+                    me.deleteAquarium();
+                    me.navCtrl.popToRoot()
+                  }
+                }
+              ]
+            });
+            alert.present();
           }
         },
         {

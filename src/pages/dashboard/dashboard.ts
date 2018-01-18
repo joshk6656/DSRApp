@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { Platform, ActionSheetController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 
 import { Addaquariumstep1Page } from '../addaquariumstep1/addaquariumstep1'
 import { AquariumdetailsPage } from '../aquariumdetails/aquariumdetails';
@@ -18,7 +19,7 @@ import { LoggerServiceProvider } from '../../providers/logger-service/logger-ser
 export class DashboardPage {
   public aquariums = {};
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public dsrData: DsrDataProvider, public authService: AuthServiceProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider) {
+  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, public dsrData: DsrDataProvider, public authService: AuthServiceProvider, public actionsheetCtrl: ActionSheetController, public platform: Platform, private log: LoggerServiceProvider, private translate: TranslateService) {
     let me = this;
     let loader = this.loadingCtrl.create({
         content: "Loading..."
@@ -55,29 +56,32 @@ export class DashboardPage {
 
   openMenu() {
     let me = this;
-    let dashboardActions = this.actionsheetCtrl.create({
-      title: 'DSR Acties',
-      cssClass: 'action-sheets-basic-page',
-      buttons: [
-        {
-          text: 'Afmelden',
-          role: 'destructive',
-          icon: !this.platform.is('ios') ? 'heart-outline' : null,
-          handler: () => {
-            me.logout();
+    this.translate.get(['DSR Actions', 'Logout', 'Close']).subscribe((translations: string) => {
+      //console.log(res);
+      let dashboardActions = this.actionsheetCtrl.create({
+        title: translations['DSR Actions'],
+        cssClass: 'action-sheets-basic-page',
+        buttons: [
+          {
+            text: translations['Logout'],
+            role: 'destructive',
+            icon: !this.platform.is('ios') ? 'heart-outline' : null,
+            handler: () => {
+              me.logout();
+            }
+          },
+          {
+            text: translations['Close'],
+            role: 'cancel', // will always sort to be on the bottom
+            icon: !this.platform.is('ios') ? 'close' : null,
+            handler: () => {
+              me.log.debug('DashboardPage','openMenu','Cancel clicked');
+            }
           }
-        },
-        {
-          text: 'Sluiten',
-          role: 'cancel', // will always sort to be on the bottom
-          icon: !this.platform.is('ios') ? 'close' : null,
-          handler: () => {
-            me.log.debug('DashboardPage','openMenu','Cancel clicked');
-          }
-        }
-      ]
+        ]
+      });
+      dashboardActions.present();
     });
-    dashboardActions.present();
   }
 
   addaquariumstep1btn() {

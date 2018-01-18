@@ -28,14 +28,14 @@
 
 <ion-content padding>
     <ion-list *ngIf="nomeasurements">
-      Geen metingen gevonden.
+        {{ 'No measurements found' | translate }}
     </ion-list>
 
     <ion-list>
-        <ion-list-header>Dosing volumes</ion-list-header>
+        <ion-list-header>{{ 'Dosing volumes' | translate }}</ion-list-header>
         <ion-card *ngIf="DSRmethod === 'FULLDSR' || DSRmethod === 'MIXED'">
           <ion-item text-wrap style="background-color:coral; color: white;">
-            Full DSR en Mixed APP calculators zijn nog in vroege ontwikkelingsfase!.
+            {{ 'Beta Warning' | translate }}
           </ion-item>
         </ion-card>
         
@@ -50,10 +50,10 @@
             <h2 *ngIf="aquarium.dosings[parameter].correctionvalue == undefined">{{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
             <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined && aquarium.dosings[parameter].correctiontype != '%'" class="secondary">* {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
             <h2 *ngIf="aquarium.dosings[parameter].correctionvalue != undefined && aquarium.dosings[parameter].correctiontype == '%'" class="secondary">** {{aquarium.dosings[parameter].productname}} {{(aquarium.dosings[parameter].correctionvalue) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</h2>
-            <p *ngIf="aquarium.dosings[parameter].correctiondays != undefined" item-right> voor {{aquarium.dosings[parameter].correctiondays}} dagen</p>
-            <p *ngIf="aquarium.dosings[parameter].correctiondays == undefined" item-right> per dag</p>
-            <p *ngIf="aquarium.dosings[parameter].correctionvalue != undefined">Normal value: {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</p>
-            <p *ngIf="aquarium.dosings[parameter].missingmeasurement">Geen meting gevonden</p>
+            <p *ngIf="aquarium.dosings[parameter].correctiondays != undefined" item-right> {{ 'for' | translate }} {{aquarium.dosings[parameter].correctiondays}} {{ 'days' | translate }}</p>
+            <p *ngIf="aquarium.dosings[parameter].correctiondays == undefined" item-right> {{ 'per day' | translate }}</p>
+            <p *ngIf="aquarium.dosings[parameter].correctionvalue != undefined">{{ 'Normal value' | translate }}: {{(aquarium.dosings[parameter].dosing * (aquarium.totalwatervolume / 100)) | number : '1.2-2'}} {{aquarium.dosings[parameter].unit}}</p>
+            <p *ngIf="aquarium.dosings[parameter].missingmeasurement">{{ 'No measurements found' | translate }}</p>
           </ion-item>
         </div>
         <p *ngIf="correctionvalues">(*) Verhoogde/verlaagde dosering gedurende het verloop van 1 week. <br />
